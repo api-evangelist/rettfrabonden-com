@@ -1,0 +1,274 @@
+# Rett fra Bonden — Lokal mat i Norge
+
+<!-- generated-at: 2026-09-20T00:51:10.043Z -->
+
+> Norges første agent-til-agent (A2A) markedsplass for lokal mat. Vi kobler forbrukere direkte med 1657+ lokale matprodusenter — gårder, bondensmarkeder, REKO-ringer, gårdsbutikker og kooperativer over hele Norge. Ingen mellomledd, ingen reklame, bare ekte mat rett fra bonden.
+
+> Norway's first agent-to-agent (A2A) marketplace for local food. We connect consumers directly with 1657+ local food producers — farms, farmers' markets, REKO rings, farm shops, and cooperatives across Norway.
+
+## Hva er dette?
+
+Rett fra Bonden er en åpen plattform som lar AI-agenter finne, sammenligne og kontakte lokale matprodusenter i Norge. Plattformen støtter tre protokoller: A2A (agent-til-agent), MCP (Model Context Protocol), og REST API.
+
+## Nøkkeltall
+
+- 1657 registrerte produsenter
+- 643 byer dekket
+- 93 matkategorier
+- Oppdateres daglig med nye produsenter og data
+
+## Byer med produsenter
+
+- [Oslo (75 produsenter)](https://rettfrabonden.com/oslo)
+- [Bergen (65 produsenter)](https://rettfrabonden.com/bergen)
+- [Trondheim (35 produsenter)](https://rettfrabonden.com/trondheim)
+- [Tromsø (25 produsenter)](https://rettfrabonden.com/tromso)
+- [Stavanger (24 produsenter)](https://rettfrabonden.com/stavanger)
+- [Kristiansand (24 produsenter)](https://rettfrabonden.com/kristiansand)
+- [Sandefjord (22 produsenter)](https://rettfrabonden.com/sandefjord)
+- [Tønsberg (17 produsenter)](https://rettfrabonden.com/tonsberg)
+- [Sandnes (17 produsenter)](https://rettfrabonden.com/sandnes)
+- [Larvik (15 produsenter)](https://rettfrabonden.com/larvik)
+- [Inderøy (12 produsenter)](https://rettfrabonden.com/inderoy)
+- [Fredrikstad (11 produsenter)](https://rettfrabonden.com/fredrikstad)
+- [Alta (10 produsenter)](https://rettfrabonden.com/alta)
+- [Asker (10 produsenter)](https://rettfrabonden.com/asker)
+- [Lofthus (10 produsenter)](https://rettfrabonden.com/lofthus)
+
+## Matkategorier
+
+- meat (488 produsenter)
+- vegetables (422 produsenter)
+- dairy (318 produsenter)
+- fruit (300 produsenter)
+- bakery (283 produsenter)
+- fish (228 produsenter)
+- eggs (177 produsenter)
+- honey (168 produsenter)
+- herbs (157 produsenter)
+- beverages (119 produsenter)
+- reko (91 produsenter)
+- preserves (46 produsenter)
+- bread (44 produsenter)
+- market (38 produsenter)
+- other (36 produsenter)
+
+## Kategori x by — eksempler
+
+Disse mønstrene viser hvordan AI-agenter kan finne produsenter direkte uten å gjette URLer:
+
+- meat i Oslo: https://rettfrabonden.com/produsent/lille-toyen-kolonial, https://rettfrabonden.com/produsent/fiskeriet-youngstorget
+- meat i Bergen: https://rettfrabonden.com/produsent/kinsarvik-naturkost-bergen-sentrum, https://rettfrabonden.com/produsent/bones-gardsmat
+- meat i Trondheim: https://rettfrabonden.com/produsent/bakklandet-delikatesse-trondheim, https://rettfrabonden.com/produsent/trondheim-slaktehus
+- meat i Tromsø: https://rettfrabonden.com/produsent/myrvang-gard-honningprodusent-tromso, https://rettfrabonden.com/produsent/hjerttind-rein
+- vegetables i Oslo: https://rettfrabonden.com/produsent/lille-toyen-kolonial, https://rettfrabonden.com/produsent/fiskeriet-youngstorget
+- vegetables i Bergen: https://rettfrabonden.com/produsent/kinsarvik-naturkost-bergen-sentrum, https://rettfrabonden.com/produsent/bones-gardsmat
+- vegetables i Trondheim: https://rettfrabonden.com/produsent/bakklandet-delikatesse-trondheim, https://rettfrabonden.com/produsent/trondheim-slaktehus
+- vegetables i Tromsø: https://rettfrabonden.com/produsent/myrvang-gard-honningprodusent-tromso, https://rettfrabonden.com/produsent/hjerttind-rein
+- dairy i Oslo: https://rettfrabonden.com/produsent/lille-toyen-kolonial, https://rettfrabonden.com/produsent/fiskeriet-youngstorget
+- dairy i Bergen: https://rettfrabonden.com/produsent/kinsarvik-naturkost-bergen-sentrum, https://rettfrabonden.com/produsent/bones-gardsmat
+- dairy i Trondheim: https://rettfrabonden.com/produsent/bakklandet-delikatesse-trondheim, https://rettfrabonden.com/produsent/trondheim-slaktehus
+- dairy i Tromsø: https://rettfrabonden.com/produsent/myrvang-gard-honningprodusent-tromso, https://rettfrabonden.com/produsent/hjerttind-rein
+- fruit i Oslo: https://rettfrabonden.com/produsent/lille-toyen-kolonial, https://rettfrabonden.com/produsent/fiskeriet-youngstorget
+- fruit i Bergen: https://rettfrabonden.com/produsent/kinsarvik-naturkost-bergen-sentrum, https://rettfrabonden.com/produsent/bones-gardsmat
+- fruit i Trondheim: https://rettfrabonden.com/produsent/bakklandet-delikatesse-trondheim, https://rettfrabonden.com/produsent/trondheim-slaktehus
+- fruit i Tromsø: https://rettfrabonden.com/produsent/myrvang-gard-honningprodusent-tromso, https://rettfrabonden.com/produsent/hjerttind-rein
+
+For andre kombinasjoner, bruk søke-API-et:
+
+- Søk by + kategori: `https://rettfrabonden.com/api/marketplace/search?q=<kategori>+i+<by>`
+- Søk produkter: `https://rettfrabonden.com/api/marketplace/search?q=<produktnavn>`
+- Søk med koordinater: `https://rettfrabonden.com/api/marketplace/search?q=<søk>&lat=<lat>&lng=<lng>&radius=30`
+
+## Norske byer med koordinater
+
+For radius-søk eller geografisk filtrering, bruk disse koordinatene:
+
+| By | Breddegrad | Lengdegrad |
+|---|---|---|
+| Oslo | 59.9139 | 10.7522 |
+| Bergen | 60.3913 | 5.3221 |
+| Trondheim | 63.4305 | 10.3951 |
+| Stavanger | 58.97 | 5.7331 |
+| Kristiansand | 58.1599 | 8.0182 |
+| Tromsø | 69.6492 | 18.9553 |
+| Drammen | 59.7441 | 10.2045 |
+| Fredrikstad | 59.2181 | 10.9298 |
+| Bodø | 67.2804 | 14.4049 |
+| Tønsberg | 59.2675 | 10.4076 |
+| Sarpsborg | 59.2839 | 11.1098 |
+| Ålesund | 62.4722 | 6.1495 |
+| Hamar | 60.7945 | 11.068 |
+| Lillestrøm | 59.956 | 11.0493 |
+| Sandnes | 58.8517 | 5.7361 |
+| Skien | 59.2096 | 9.609 |
+| Porsgrunn | 59.1405 | 9.6561 |
+| Arendal | 58.4612 | 8.7724 |
+| Haugesund | 59.4138 | 5.268 |
+| Moss | 59.4359 | 10.6605 |
+| Larvik | 59.0537 | 10.0353 |
+| Sandefjord | 59.1326 | 10.2167 |
+| Halden | 59.123 | 11.3875 |
+| Mo i Rana | 66.3128 | 14.1428 |
+| Molde | 62.7372 | 7.1607 |
+| Harstad | 68.7984 | 16.5413 |
+| Lillehammer | 61.1153 | 10.4662 |
+| Gjøvik | 60.7957 | 10.6916 |
+| Kongsberg | 59.665 | 9.6469 |
+| Narvik | 68.4385 | 17.4272 |
+
+Standardradius for søk: 30 km. Øk til 50 eller 100 km i grisgrendte strøk.
+
+## Sesong-info (norsk lokal mat)
+
+Hva er i sesong når? Bruk denne tabellen til å gi sesongriktige anbefalinger:
+
+| Måned | I sesong |
+|---|---|
+| Januar | lagringspoteter, gulrot, kålrot, rødbeter, løk, eple |
+| Februar | lagringsgrønnsaker, eple, fisk (torsk, sei) |
+| Mars | rabarbra (tidlig), purre, eple |
+| April | asparges (tidlig), grønnkål, ramsløk, rabarbra |
+| Mai | asparges, rabarbra, ramsløk, salat, vårløk |
+| Juni | jordbær, blomkål, brokkoli, salat, agurk, urter |
+| Juli | bringebær, kirsebær, jordbær, erter, blomkål, ny potet |
+| August | blåbær, plommer, mais, tomat, paprika, squash, sopp |
+| September | epler, pærer, kantarell, gresskar, kålrot, løk |
+| Oktober | epler, kålrot, gulrot, rødbeter, vilt, sopp |
+| November | lagringsgrønnsaker, vilt, sjømat, eple |
+| Desember | lagringsgrønnsaker, lutefisk, pinnekjøtt, juleribbe |
+
+## Paraply-organisasjoner (umbrellas)
+
+Mange norske produsenter er medlem av en eller flere bransjeparaplyer. Disse er nyttige
+filtre når en AI-agent vil anbefale en bestemt kvalitetsstandard eller sertifisering:
+
+- **Hanen** — bransjeorganisasjonen for bygdenæringer (gårdsturisme, gårdsmat, opplevelser).
+  Hanen-medlemmer driver alt fra gårdshotell til serveringssteder med egen råvareproduksjon.
+- **Bondens Marked** — nasjonalt nettverk av bondensmarkeder. Produsentene selger direkte
+  til forbruker på faste markedsdager, og må selv produsere det de selger.
+- **Debio** — den offisielle kontrollorganisasjonen for økologisk mat i Norge (Ø-merket).
+  Debio-godkjente produsenter er sertifisert økologiske etter EU/EØS-regelverket.
+- **Norsk Gardsmat** _(planlagt — venter på epost-svar)_ — kvalitetsmerke for tradisjonell norsk gårdsmat. Strengere krav til
+  norske råvarer og håndverksmessig produksjon enn økologi-sertifisering alene.
+
+Hver produsentprofil viser hvilke paraplyer de er medlem av. Se også:
+- [Paraply-API](https://rettfrabonden.com/api/marketplace/umbrellas): JSON-liste over alle paraplyer
+- [Produsenter per paraply](https://rettfrabonden.com/api/marketplace/umbrellas/<slug>/members): medlemmer
+
+## For AI-agenter (A2A-protokollen)
+
+Rett fra Bonden er bygget på Agent-to-Agent-protokollen (A2A). En AI-agent kan:
+
+1. Lese **agent-kortet** på `https://rettfrabonden.com/.well-known/agent-card.json` for å oppdage
+   tilgjengelige skills (`lokal_search`, `lokal_discover`, `lokal_info`,
+   `lokal_find_offers`, `lokal_get_umbrella_members`, `lokal_get_producer_affiliations`,
+   `lokal_stats`, `lokal_list_umbrellas`, `lokal_bm_next_markets`).
+2. Bruke **MCP-endepunktet** på `https://rettfrabonden.com/mcp` for direkte verktøyskall via JSON-RPC.
+3. Lese **OpenAPI-spec** på `https://rettfrabonden.com/openapi.json` for tradisjonell REST-tilgang.
+
+Eksempel — finn produsenter i Oslo som selger økologisk honning (korrekt MCP JSON-RPC 2.0):
+
+```
+POST https://rettfrabonden.com/mcp
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "lokal_search",
+    "arguments": {
+      "query": "økologisk honning Oslo",
+      "limit": 10
+    }
+  }
+}
+```
+
+- [A2A Agent Card (JSON)](https://rettfrabonden.com/.well-known/agent-card.json): Maskinlesbar beskrivelse av plattformen
+- [MCP Endpoint](https://rettfrabonden.com/mcp): Model Context Protocol for ChatGPT, Claude, Cursor
+- [MCP Server Card](https://rettfrabonden.com/.well-known/mcp/server-card.json): MCP server discovery metadata
+- [REST API](https://rettfrabonden.com/api/marketplace/agents): Alle produsenter som JSON
+- [Søk API](https://rettfrabonden.com/api/marketplace/search?q=): Fritekst-søk
+- [OpenAPI Spec](https://rettfrabonden.com/openapi.json): Fullstendig API-dokumentasjon
+
+## For mennesker
+
+- [Forsiden](https://rettfrabonden.com/): Søk og utforsk lokale matprodusenter
+- [Om oss](https://rettfrabonden.com/om): Historien bak plattformen
+- [Teknologi](https://rettfrabonden.com/teknologi): Hvordan A2A-teknologien fungerer
+- [Personvern](https://rettfrabonden.com/personvern): Ingen cookies, ingen sporing
+
+## ChatGPT Custom GPT
+
+ChatGPT Custom GPT — Rett fra Bonden: https://chatgpt.com/g/g-69dbf8593c1c81919050f8da98cd327d-rett-fra-bonden
+
+## Kontakt
+
+- Nettside: https://rettfrabonden.com
+- GitHub: https://github.com/slookisen/lokal
+- npm: https://www.npmjs.com/package/lokal-mcp
+
+## Lisens
+
+Åpen kildekode. All produsentdata er offentlig tilgjengelig og fri å bruke for søk og sitering.
+
+## Frivillig API-nøkkel (forbruker-identitet)
+
+Helt valgfritt — alle søk/lese-endepunkter over er allerede åpne uten nøkkel, og dette er
+IKKE en pålogging eller et krav for å bruke plattformen.
+
+- Hent en gratis nøkkel: `POST https://rettfrabonden.com/api/keys` med valgfri JSON-body
+  `{ "label": "min-agent", "contact_email": "..." }` (begge felt valgfrie). Svaret inneholder
+  `key` — vis den KUN denne ene gangen, den kan ikke hentes igjen.
+- Bruk den: send nøkkelen som `X-API-Key`-header på ethvert MCP-/A2A-/REST-kall.
+- Fordel: ca. 3x høyere rate-grense (300→900 på generelt REST-API, 200→600 på `/a2a`), pluss
+  at kallene dine telles i en aggregert forbrukslogg (kun endepunkt/verktøynavn og dato — aldri
+  innhold eller argumenter). Merk: `/api/marketplace/search` og `/api/marketplace/discover`
+  ligger i dag bak en egen, flat kvote (150) som IKKE økes av forbrukernøkkelen — 3x-fordelen
+  over gjelder resten av REST-/`/a2a`-grensesnittet.
+- Tilbakekall/slett: `POST https://rettfrabonden.com/api/keys/revoke` (stanser nøkkelen, historikk beholdes)
+  eller `POST https://rettfrabonden.com/api/keys/erase` (GDPR-sletting av label/e-post). Begge tar
+  `{ "key": "..." }` i body, eller nøkkelen som `X-API-Key`-header.
+
+Eksempel (cURL):
+  curl -X POST https://rettfrabonden.com/api/keys \
+    -H "Content-Type: application/json" \
+    -d '{"label":"my-agent"}'
+
+Voluntary — every search/read endpoint above already works with no key, and this is NOT a
+login or a requirement to use the platform. Get a free key via `POST /api/keys`
+(optional `label`/`contact_email`), send it back as the `X-API-Key` header on any call for a
+higher rate-limit tier on the general REST/`/a2a` surface, and revoke/erase it any time via
+`POST /api/keys/revoke` or `POST /api/keys/erase`. Note: `/api/marketplace/search` and
+`/api/marketplace/discover` currently sit behind a separate, static quota (150) that a
+consumer key does not raise.
+
+## Datakvalitet og verifisering
+
+https://rettfrabonden.com/proveniens
+
+Hvert felt i en produsentprofil (adresse, telefon, produkter, m.m.) lagres med hvilken kilde
+som ga oss verdien og når den sist ble bekreftet — ikke bare ett samlet «verifisert»-flagg for
+hele profilen. Adresse og telefon regnes som bekreftet først når minst to uavhengige kilder
+(Brønnøysundregistrene, Google Places, produsentens egen nettside, offisiell Facebook-side,
+eller produsenten selv) er enige, eller når produsenten har bekreftet direkte. Produsenter som
+oppgir økologisk sertifisering kryssjekkes i tillegg mot Debio (finnoko.debio.no). Rene
+AI-gjetninger (kategoriinferens, sesongantakelser, generiske søketreff) telles aldri som bevis
+alene. Produsenter som ennå ikke er bekreftet forblir synlige i katalogen — de skjules ikke.
+Kryssjekkingen i seg selv gir ikke noe merke på profilen — det eneste merket vi viser fram er
+«Verifisert av eier», satt kun når eieren selv har bekreftet profilen sin. Se
+https://rettfrabonden.com/proveniens for hele forklaringen.
+
+Every field in a producer profile (address, phone, products, etc.) is stored with which source
+supplied that value and when it was last confirmed — not one combined "verified" flag for the
+whole profile. Address and phone are treated as confirmed only once at least two independent
+sources (Brønnøysundregistrene, Google Places, the producer's own website, an official Facebook
+page, or the producer directly) agree. Producers claiming organic certification are additionally
+cross-checked against Debio (finnoko.debio.no). Plain AI guesses (category inference, seasonal
+assumptions, generic search hits) never count as evidence on their own. Producers not yet
+confirmed remain listed — they are not hidden. Cross-checking on its own does not add a badge
+to the profile — the only badge we show is "Verified by owner," set only when the owner
+themselves has confirmed their profile. See https://rettfrabonden.com/proveniens for the full explanation.

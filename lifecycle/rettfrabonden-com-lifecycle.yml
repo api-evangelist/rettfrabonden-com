@@ -1,0 +1,56 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://rettfrabonden.com/api (index: version "v1"), https://rettfrabonden.com/api/v1 (identical index),
+  the two OpenAPI documents (info.version 1.0.0), the MCP initialize response (serverInfo 0.4.0), the MCP
+  server card (protocol-version support statement), https://github.com/slookisen/lokal (0 releases, 0 tags)
+  and registry.modelcontextprotocol.io (dated package versions). Probed for a status page (/status 404),
+  a changelog (/changelog 404) and a deprecation policy (none found) on 2026-09-19.
+versioning:
+  scheme: uri-path (nominal)
+  current: v1
+  mechanism: >-
+    The API index at /api reports version "v1" and /api/v1 serves the same index, but every documented
+    route lives under /api/marketplace/... with no version segment; /api/v1/openapi.json is 404. The
+    version is a label, not a routing dimension.
+  spec_version: 1.0.0 (both OpenAPI documents)
+  mcp_server_version: 0.4.0 (serverInfo from initialize; npm lokal-mcp 0.4.0; repo main at 0.4.1 unpublished)
+  agent_card_version: 1.0.0
+  mcp_protocol_support:
+    negotiated: '2025-06-18'
+    declared: ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05', '2024-10-07']
+    not_supported: '2026-07-28 era (per-request _meta, server/discover) — stated verbatim in the server card: "a client built for it will receive Server not initialized"'
+    source: well-known/rettfrabonden-com-mcp-server-card.json
+  docs: https://rettfrabonden.com/teknologi
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  notes: >-
+    No deprecation or versioning policy is published. The only deprecation signal in the contract is
+    prose: the result-level distanceKm field in searchFood and discoverProducers responses is described as
+    "Deprecated at the result level — read agent.location.distanceKm instead", without an OpenAPI
+    deprecated: true flag (captured as an overlay action in overlays/).
+sla:
+  url: null
+  public_uptime_target: null
+  notes: >-
+    No SLA. The Terms of Service (/terms, "Sist oppdatert 20. april 2026") state the service is provided
+    "as is", that the operator is not party to transactions, and that users must respect robots.txt and
+    published rate limits.
+status_page: null
+status_page_note: /status returns the site's 404 page; the a2aregistry.org entry tracks uptime_percentage and last_health_check for the A2A endpoint, but that is a third-party monitor, not a provider status page.
+changelog: null
+changelog_note: >-
+  No dated changelog is published on the site or in the repository (0 GitHub releases, 0 tags, no
+  CHANGELOG file). The only dated release trail is the npm/MCP-registry publish history of lokal-mcp:
+  0.3.1 (2026-04-14), 0.3.3 (2026-04-19), 0.4.0 (2026-05-15). The site's llms.txt carries a generated-at
+  timestamp that moves daily, and the README/agent card producer counts (1,371+ -> 1,657+ -> 1,904+)
+  record catalogue growth rather than API change.
+rate_limits: rate-limits/rettfrabonden-com-rate-limits.yml
+deprecated_operations: []
+deprecated_fields:
+- field: results[].distanceKm
+  operations: [searchFood, discoverProducers]
+  replacement: results[].agent.location.distanceKm (present only for geoPrecision "address")
+  evidence: openapi/rettfrabonden-com-openapi.yml — description text

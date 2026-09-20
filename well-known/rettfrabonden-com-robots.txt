@@ -1,0 +1,221 @@
+# Lokal / rettfrabonden.com — robots.txt
+# A2A marketplace for local food in Norway.
+# AI agents are explicitly welcome to discover, read, and cite our data.
+
+User-agent: *
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+# ─── AI / agent crawlers (explicit allow) ───────────────────
+User-agent: GPTBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Googlebot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: Applebot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: Bytespider
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: FacebookBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: Diffbot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: cohere-ai
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: NotHumanSearch
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /samtale/
+Disallow: /eier/
+Disallow: /magic-link-verify
+Disallow: /admin/
+Disallow: /ut/
+
+User-agent: Omgilibot
+Disallow: /
+
+Sitemap: https://rettfrabonden.com/sitemap.xml
+
+# ─── AI discovery endpoints ──────────────────────────────────
+# LLM-friendly overview:    https://rettfrabonden.com/llms.txt
+# Full producer data:       https://rettfrabonden.com/llms-full.txt
+# A2A Agent Card:           https://rettfrabonden.com/.well-known/agent-card.json
+# MCP Server Card:          https://rettfrabonden.com/.well-known/mcp/server-card.json
+# MCP Manifest:             https://rettfrabonden.com/.well-known/mcp
+# Agent Discovery:          https://rettfrabonden.com/.well-known/agents.txt
+# OpenAPI Spec:             https://rettfrabonden.com/openapi.json

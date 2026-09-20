@@ -1,0 +1,66 @@
+generated: '2026-09-19'
+method: searched
+source: openapi/rettfrabonden-com-agent-surface-openapi.json
+docs:
+- https://rettfrabonden.com/llms.txt
+- https://rettfrabonden.com/.well-known/agent-card.json
+- https://rettfrabonden.com/.well-known/oauth-protected-resource
+- https://rettfrabonden.com/teknologi
+summary:
+  types: [apiKey, none]
+  api_key_in: [header]
+  oauth2_flows: []
+  model: >-
+    Reads are open. Every search/discover/detail/geocode/stats operation, the whole MCP tool surface
+    (including the anonymous cart flow) and the A2A message/send and tasks/* methods answer with no
+    credential. The ONE key-gated write is producer registration (POST /api/marketplace/register),
+    which requires an X-API-Key. A second, voluntary X-API-Key — the "consumer key" from POST /api/keys —
+    exists only to raise the caller's rate-limit ceiling and to attribute usage; it is not a login.
+    There is no OAuth, no OIDC and no bearer-token issuance: the RFC 9728 protected-resource document
+    declares authorization_servers [] and names the API key as the credential in vendor x-auth-* fields.
+schemes:
+- name: apiKey
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  role: producer key
+  required_for: [registerProducer, producer-side writes documented as "write operations"]
+  obtain: 'issued in the response to POST /api/marketplace/register (openapi.json: "Registered agent with API key"; protected-resource x-auth-obtain-url)'
+  scopes: [write]
+  sources: [a2a/rettfrabonden-com-agent-card.json, well-known/rettfrabonden-com-oauth-protected-resource.json, well-known/rettfrabonden-com-mcp-server-card.json]
+  description: API key received upon registration. Required for write operations; read/search operations are open.
+- name: consumerApiKey
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  role: voluntary consumer-identity key for AI agents
+  required_for: []
+  obtain: POST https://rettfrabonden.com/api/keys with optional JSON body {label, contact_email}; the key is returned once and cannot be retrieved again
+  revoke: POST https://rettfrabonden.com/api/keys/revoke (stops the key, keeps history) or POST https://rettfrabonden.com/api/keys/erase (GDPR erasure of label/e-mail); both take {key} in the body or the key as X-API-Key
+  effect: about 3x higher rate-limit ceiling on the general REST and /a2a surface (300 -> 900 and 200 -> 600 per 15 minutes) and a per-key usage ledger (endpoint/tool name and date only); does NOT raise the static 150-per-15-minute quota on /api/marketplace/search and /discover
+  scopes: [read]
+  sources: [a2a/rettfrabonden-com-agent-card.json, llms/rettfrabonden-com-llms.txt]
+  description: Free, voluntary key — same header name as the producer key, different purpose; nothing requires it.
+- name: adminKey
+  type: apiKey
+  in: header
+  parameter: X-Admin-Key
+  role: operator/admin key
+  required_for: [admin routes — not part of the public surface]
+  scopes: []
+  sources: [openapi/rettfrabonden-com-agent-surface-openapi.json]
+  description: >-
+    The only securityScheme declared in /openapi.json, and the scheme that spec attaches to registerProducer.
+    Every other provider document (agent card, protected-resource metadata, server card, /api index,
+    agents.txt) says registration is gated by X-API-Key, not X-Admin-Key. Recorded as spec drift; the
+    privacy page describes admin access as "protected with API keys in environment variables", i.e. an
+    operator credential.
+- name: none
+  type: none
+  applies_to: [searchFood, searchProducers, discoverProducers, listProducers, getProducerInfo, getProducer, geocodePlace, getAcpProductFeed, getPlatformStats, getAgentCard, every MCP tool, A2A message/send, tasks/get, tasks/list]
+  sources: [openapi/rettfrabonden-com-openapi.yml, mcp/rettfrabonden-com-mcp-tools.json]
+  description: Anonymous access; rate-limited per IP (see rate-limits/).
+observations:
+- POST /api/marketplace/register with an empty JSON body and no key returned HTTP 400 with a zod validation error list, not 401 — input validation runs before (or instead of) the key check on an empty body, so which header actually gates a valid registration could not be observed without submitting a real registration, which this pass did not do.
+- The card carries authentication {schemes:[apiKey]} (pre-0.3 shape) and security [] (no requirement) alongside its securitySchemes map.
+- The site has no OpenID/OAuth discovery documents (/.well-known/openid-configuration and /oauth-authorization-server both 404) — scopes_supported [read, write] in the protected-resource document are API-key scopes, not OAuth scopes, so no scopes/ artifact is emitted.

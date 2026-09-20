@@ -1,0 +1,51 @@
+generated: '2026-09-19'
+method: searched
+source: https://rettfrabonden.com/llms.txt
+docs:
+- https://rettfrabonden.com/om
+- https://rettfrabonden.com/selger
+- https://rettfrabonden.com/terms
+- https://github.com/slookisen/lokal#readme
+plan_count: 2
+currency: NOK
+model: free; non-profit; no paid tiers, no pricing page, no billing
+summary: >-
+  Rett fra Bonden publishes no prices because there are none. /om states "Rett fra Bonden er et non-profit
+  initiativ" and "Gratis å være med. Ingen annonser, ingen betalte plasseringer"; /selger's registration
+  button reads "Registrer gratis"; /pricing and /priser both 404; the privacy page says "Vi samler ikke inn
+  betalingsinformasjon". What the provider DOES publish is two access tiers that differ only in rate-limit
+  ceiling — anonymous, and with a free voluntary consumer key — so those are the plans. Limits are as
+  stated in llms.txt and the README on 2026-09-19 and are per IP / per key, per 15-minute window.
+plans:
+- id: free-anonymous
+  name: Open access (no key)
+  price: 0
+  currency: NOK
+  period: n/a
+  included: all read operations on REST, MCP (all 15 tools, including the cart flow) and A2A
+  overage: throttled (429) until the window resets; the README says the server throttles rather than blocks IPs
+  limits:
+  - 300 general REST requests per 15 minutes per IP
+  - 200 /a2a requests per 15 minutes per IP
+  - 150 search + discover requests per 15 minutes per IP (MCP tools/call counts against this bucket)
+  signup: none
+- id: free-consumer-key
+  name: Consumer key (voluntary, free)
+  price: 0
+  currency: NOK
+  period: n/a
+  included: everything in the open tier plus a per-key usage ledger (endpoint/tool name and date only)
+  overage: throttled (429) until the window resets
+  limits:
+  - 900 general REST requests per 15 minutes per key (about 3x)
+  - 600 /a2a requests per 15 minutes per key (about 3x)
+  - 150 search + discover requests per 15 minutes — the static per-IP quota that the key does NOT raise
+  signup: POST https://rettfrabonden.com/api/keys with optional {label, contact_email}; no login or account
+  revocation: POST /api/keys/revoke or POST /api/keys/erase
+producer_side:
+  listing: free ("Registrer gratis"); owners claim and edit their profile via e-mail magic link
+  ranking: no paid placement ("Value-based matching — no ads, no pay-to-rank", README)
+  orders: pickup orders carry no payment through the platform ("No payment is charged")
+  note: The repository contains ROADMAP-MONETIZATION.md, so a paid tier may be planned; nothing is published or priced as of 2026-09-19.
+admin_tier:
+  note: The /api index and agents.txt name an "admin" limit of 500 requests per hour; this is the operator's own credential (X-Admin-Key), not a purchasable plan, and is not counted above.

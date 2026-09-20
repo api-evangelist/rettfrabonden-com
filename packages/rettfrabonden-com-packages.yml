@@ -1,0 +1,51 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://rettfrabonden.com/llms.txt ("Kontakt" section names npm lokal-mcp), https://rettfrabonden.com/teknologi
+  (Claude Desktop config), the agent card's x-distribution block, and the repository
+  https://github.com/slookisen/lokal (mcp-server/, mcp-server-dental/, mcp-server-opplevagent/). Registry
+  metadata read live on 2026-09-19 from registry.npmjs.org/lokal-mcp and registry.modelcontextprotocol.io.
+  npm, PyPI, RubyGems, crates.io, NuGet, Maven Central, pkg.go.dev and Packagist were searched for
+  "rettfrabonden" and "lokal-mcp"; only the npm package exists.
+note: >-
+  Rett fra Bonden ships NO client SDK for its REST API — the only first-party package is the stdio MCP
+  server, which is an agent-side adapter rather than a language SDK, so no SDKs pointer is emitted. The
+  npm package trails the repository: registry latest is 0.4.0 (2026-05-15) while mcp-server/package.json
+  on main reads 0.4.1, and the live remote server reports serverInfo.version 0.4.0. The remote server is
+  the primary distribution; the package exists for clients that cannot speak Streamable HTTP.
+packages:
+- name: lokal-mcp
+  kind: mcp-server-stdio
+  language: JavaScript
+  runtime: Node.js (ESM; depends on @modelcontextprotocol/sdk ^1.12.1, zod ^3.23.8)
+  registry: npm
+  registry_url: https://www.npmjs.com/package/lokal-mcp
+  install: npx lokal-mcp
+  version: 0.4.0
+  published: '2026-05-15'
+  first_published: '2026-04-02'
+  official: true
+  license: MIT
+  repository: https://github.com/slookisen/lokal/tree/main/mcp-server
+  maintainer: slookisen (Daniel Fredriksen — the platform operator named in /terms)
+  mcp_registry_name: io.github.slookisen/lokal-mcp
+  description: MCP server for Rett fra Bonden — find local food producers in Norway via Claude Desktop; ranked producers with contact info and vCard links.
+  note: Registry description and the package README describe four tools (lokal_search, lokal_discover, lokal_info, lokal_stats) and two resources; the remote server at /mcp exposes fifteen.
+- name: lokal-mcp.mcpb
+  kind: mcp-desktop-extension-bundle
+  language: JavaScript
+  registry: github
+  registry_url: https://github.com/slookisen/lokal/blob/main/mcp-server/lokal-mcp.mcpb
+  install: install the .mcpb bundle in a desktop client that supports MCP bundles
+  version: 0.4.0
+  published: null
+  official: true
+  license: MIT
+  repository: https://github.com/slookisen/lokal/tree/main/mcp-server
+  note: >-
+    Version read from mcp-server/manifest.json (manifest_version 0.3, version 0.4.0). A file committed to
+    a git repository has no registry metadata endpoint, and the repository has zero GitHub releases and zero
+    tags, so no publish date can be recorded — null with this note, not a guess.
+not_packages:
+- name: mcp-server-dental / mcp-server-opplevagent
+  note: Sibling MCP servers in the same repository for finn-tannlege.com and opplevagent.no. Different products on other domains; not part of this provider's surface.

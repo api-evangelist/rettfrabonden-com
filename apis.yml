@@ -1,18 +1,137 @@
 aid: rettfrabonden-com
 name: Rett fra Bonden
-description: 'Rett fra Bonden is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Rett fra Bonden (rettfrabonden.com) is an open, non-profit discovery layer for local food in
+  Norway — a registry of 1,900+ farms, farm shops, REKO rings, farmers' markets and cooperatives
+  that is built to be read by AI agents first. It exposes the same producer catalogue through three
+  protocols: a REST API (natural-language and structured search, producer detail, geocoding, an
+  ACP-conformant product feed), a remote MCP server at /mcp with 15 tools including an anonymous
+  shopping-cart and pickup-order flow, and an A2A JSON-RPC endpoint at /a2a described by a signed
+  agent card at /.well-known/agent-card.json. Reads are open without a key; producer registration
+  requires an X-API-Key issued on registration. The code is MIT-licensed at github.com/slookisen/lokal
+  and the platform is operated in Norway by Daniel Fredriksen.
 url: https://raw.githubusercontent.com/api-evangelist/rettfrabonden-com/refs/heads/main/apis.yml
+image: https://rettfrabonden.com/logo-512.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass local-v3 2026-09-19 — first-party OpenAPI, live MCP server, conformant A2A agent card
+x-operator: Daniel Fredriksen (individual operator; non-profit initiative per /om and /terms)
+x-headquarters: Norway
+x-sibling-verticals:
+  note: >-
+    The same open-source codebase (slookisen/lokal) serves two sibling verticals on other domains —
+    finn-tannlege.com (dental) and opplevagent.no (experiences). They are separate products with their
+    own MCP/A2A routes and are NOT profiled here; every artifact in this repo was fetched from
+    rettfrabonden.com or lokal.fly.dev (the Fly.io origin of the same app) and describes only the
+    local-food surface.
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
+- Local Food
+- Agriculture
+- Food
+- Marketplace
+- Directory
+- Search
+- Geolocation
+- Agent-to-Agent
+- MCP
+- Norway
+- Open Source
 - Company
-apis: []
+apis:
+- name: Rett fra Bonden Local Food API
+  description: >-
+    REST surface at https://rettfrabonden.com/api/marketplace — natural-language search (searchFood),
+    structured discovery (discoverProducers), producer detail (getProducerInfo), Norwegian place
+    geocoding (geocodePlace), an ACP-conformant CSV product feed (getAcpProductFeed) and platform
+    statistics (getPlatformStats). Reads are open with no credential; producer registration and other
+    writes require X-API-Key. Two first-party OpenAPI 3.1.0 documents are published: /openapi.yaml
+    (richer schemas, 6 operations) and /openapi.json (8 paths including register, /a2a and /mcp).
+  image: https://rettfrabonden.com/logo-512.png
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/api/marketplace
+  tags:
+  - Local Food
+  - Search
+  - Geolocation
+  - Directory
+  properties:
+  - type: OpenAPI
+    url: openapi/rettfrabonden-com-openapi.yml
+  - type: OpenAPI
+    name: Agent-surface OpenAPI (/openapi.json — adds listProducers, getProducer, registerProducer, a2aJsonRpc, mcpEndpoint, getAgentCard)
+    url: openapi/rettfrabonden-com-agent-surface-openapi.json
+  - type: OpenAPI
+    name: Provider-hosted openapi.yaml
+    url: https://rettfrabonden.com/openapi.yaml
+  - type: OpenAPI
+    name: Provider-hosted openapi.json
+    url: https://rettfrabonden.com/openapi.json
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: APIReference
+    url: https://github.com/slookisen/lokal#readme
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+  - type: Conventions
+    url: conventions/rettfrabonden-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/rettfrabonden-com-problem-types.yml
+  - type: DataModel
+    url: data-model/rettfrabonden-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/rettfrabonden-com-rate-limits.yml
+  - type: Overlay
+    url: overlays/rettfrabonden-com-openapi-overlay.yaml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: AgenticAccess
+    url: agentic-access/rettfrabonden-com-agentic-access.yml
+- name: Rett fra Bonden MCP Server
+  description: >-
+    Remote MCP server (Streamable HTTP, protocol 2025-06-18 negotiated) at https://rettfrabonden.com/mcp
+    with 15 tools — search, discover, producer info, umbrella organisations, Bondens marked events,
+    geocoding, shopping-list offers, and an anonymous cart -> pickup-order flow — plus two resources.
+    tools/list answers anonymously after initialize. Also shipped as the npm stdio package lokal-mcp
+    (0.4.0) and mirrored on Smithery.
+  image: https://rettfrabonden.com/logo-512.png
+  humanURL: https://rettfrabonden.com/teknologi#mcp-oppsett
+  baseURL: https://rettfrabonden.com/mcp
+  tags:
+  - MCP
+  - Agent-to-Agent
+  - Local Food
+  properties:
+  - type: MCPServer
+    url: mcp/rettfrabonden-com-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi#mcp-oppsett
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+- name: Rett fra Bonden A2A Agent
+  description: >-
+    A2A JSON-RPC 2.0 endpoint at https://rettfrabonden.com/a2a (message/send, tasks/get, tasks/list,
+    agent/authenticatedExtendedCard) described by an EdDSA-signed agent card served at
+    /.well-known/agent-card.json (and the legacy /.well-known/agent.json). Four declared skills:
+    discover-local-food-agents, register-food-agent, search-compare-food, agent-conversation.
+  image: https://rettfrabonden.com/logo-512.png
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/a2a
+  tags:
+  - Agent-to-Agent
+  - Local Food
+  properties:
+  - type: AgentCard
+    url: a2a/rettfrabonden-com-a2a.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +140,83 @@ maintainers:
 common:
 - type: Website
   url: https://rettfrabonden.com/
+- type: Documentation
+  url: https://rettfrabonden.com/teknologi
+- type: GettingStarted
+  url: https://rettfrabonden.com/teknologi#mcp-oppsett
+- type: APIReference
+  url: https://github.com/slookisen/lokal#readme
+- type: GitHubOrganization
+  url: https://github.com/slookisen
+- type: SourceCode
+  url: https://github.com/slookisen/lokal
+- type: Support
+  url: https://github.com/slookisen/lokal/issues
+- type: Contact
+  url: https://rettfrabonden.com/kontakt
+- type: Roadmap
+  url: https://github.com/slookisen/lokal/blob/main/LOKAL-ROADMAP-V4.md
+- type: SignUp
+  url: https://rettfrabonden.com/selger
+- type: Login
+  url: https://rettfrabonden.com/selger
+- type: TermsOfService
+  url: https://rettfrabonden.com/terms
+- type: PrivacyPolicy
+  url: https://rettfrabonden.com/personvern
+- type: OpenAPI
+  url: openapi/rettfrabonden-com-openapi.yml
+- type: MCPServer
+  url: mcp/rettfrabonden-com-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/rettfrabonden-com-tool-crosswalk.yml
+- type: AgentCard
+  url: a2a/rettfrabonden-com-a2a.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/rettfrabonden-com-llms.txt
+- type: LLMsTxt
+  name: Provider-hosted llms.txt
+  url: https://rettfrabonden.com/llms.txt
+- type: WellKnown
+  url: well-known/rettfrabonden-com-well-known.yml
+- type: APICatalog
+  url: well-known/rettfrabonden-com-api-catalog.json
+- type: ContentSignal
+  url: well-known/rettfrabonden-com-robots.txt
+- type: Packages
+  url: packages/rettfrabonden-com-packages.yml
+- type: Authentication
+  url: authentication/rettfrabonden-com-authentication.yml
+- type: Conventions
+  url: conventions/rettfrabonden-com-conventions.yml
+- type: ErrorCatalog
+  url: errors/rettfrabonden-com-problem-types.yml
+- type: DataModel
+  url: data-model/rettfrabonden-com-data-model.yml
+- type: RateLimits
+  url: rate-limits/rettfrabonden-com-rate-limits.yml
+- type: Plans
+  url: plans/rettfrabonden-com-plans-pricing.yml
+- type: Lifecycle
+  url: lifecycle/rettfrabonden-com-lifecycle.yml
+- type: Conformance
+  url: conformance/rettfrabonden-com-conformance.yml
+- type: DomainSecurity
+  url: security/rettfrabonden-com-domain-security.yml
+- type: Overlay
+  url: overlays/rettfrabonden-com-openapi-overlay.yaml
+- type: AgenticAccess
+  url: agentic-access/rettfrabonden-com-agentic-access.yml
+- type: DataSubjectRequest
+  url: https://rettfrabonden.com/personvern
+- type: DataResidency
+  url: https://rettfrabonden.com/personvern
+- type: Subprocessors
+  url: https://rettfrabonden.com/personvern
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 36
+  pass: local-v3

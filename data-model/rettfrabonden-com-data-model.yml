@@ -1,0 +1,53 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived from the response schemas in openapi/rettfrabonden-com-openapi.yml (searchFood, discoverProducers,
+  getProducerInfo, geocodePlace, getAcpProductFeed), the request schemas in
+  openapi/rettfrabonden-com-agent-surface-openapi.json (registerProducer), the live MCP tool inputSchemas
+  and descriptions in mcp/rettfrabonden-com-mcp-tools.json (umbrellas, market events, cart, order), the A2A
+  tasks/list response, and one live search result. Neither OpenAPI declares components.schemas, so entity
+  names below are ours; field names are the provider's.
+docs: https://rettfrabonden.com/teknologi
+notation: >-
+  relationships use has_one / has_many / belongs_to with the referencing field name; direction is from the
+  entity that owns the reference. Entities reachable only through MCP are marked surface: mcp.
+
+entities:
+- {name: Agent, surface: [rest, mcp, a2a], id_field: id (UUID), description: 'A registered participant — almost always a producer (farm, farm shop, REKO ring, market, cooperative). Fields id, name, description, url, role (producer|consumer|logistics|quality|price-intel), skills[], location, categories[], tags[], trustScore, isVerified.'}
+- {name: Skill, surface: [rest, a2a], id_field: id, description: 'An A2A-style capability entry on an Agent (id, name, description, tags[]); producers carry product skills such as sell-honey-0.'}
+- {name: Location, surface: [rest, mcp], description: 'Where an Agent is and how precisely — city, lat, lng, geoPrecision (address|postal|city|kommune), distanceKm (address precision only), distanceLabel.'}
+- {name: Knowledge, surface: [rest, mcp], description: 'The producer detail block returned by getProducerInfo / lokal_info — address, products[], openingHours, about, certifications[], paymentMethods[], deliveryOptions[].'}
+- {name: Product, surface: [rest-feed, mcp], id_field: item_id / products.id, description: 'A listed item from the ACP feed and the cart flow — item_id, title, description, brand, url, image_url, price (NOK), availability/in_stock, is_eligible_search, is_eligible_checkout (always false), target_countries, product_category.'}
+- {name: Umbrella, surface: [mcp], id_field: umbrellaId (UUID), description: 'An organisation many producers belong to — umbrellaType market_network (Bondens marked, REKO) | venue (Mathallen) | industry_org (Hanen) | certification (Debio) | cooperative.'}
+- {name: Affiliation, surface: [mcp], description: 'Membership of a producer in an Umbrella (lokal_get_producer_affiliations / lokal_get_umbrella_members).'}
+- {name: MarketEvent, surface: [mcp], description: 'An upcoming Bondens marked market day — region, lokallag_slug, venue, date; refreshed daily from bondensmarked.no.'}
+- {name: Place, surface: [rest, mcp], description: 'A geocoded Norwegian place — name, lat, lng, radiusKm, source (cache|hardcoded|database|kartverket).'}
+- {name: Cart, surface: [mcp], id_field: cart_id, description: 'An anonymous shopping list — cart_id plus the buyer_ref capability token; valid 7 days; items grouped by producer with subtotals and a total.'}
+- {name: CartItem, surface: [mcp], description: 'A line in a Cart — product_id, qty, optional note; upserted by product_id.'}
+- {name: Order, surface: [mcp], id_field: order_id, description: 'A pickup order created per producer by lokal_cart_submit — status pending → confirmed → ready → completed | declined | cancelled (cancel_reason no_show), items, timeline[] of status transitions with timestamps; no payment.'}
+- {name: Conversation, surface: [a2a, web], id_field: samtale id (UUID), description: 'A buyer–producer thread started via A2A message/send or a search with start_conversation=true; visible at /samtale/{id}.'}
+- {name: Task, surface: [a2a], id_field: id (UUID), description: 'An A2A task — method (message/send), status.state (completed …), createdAt, updatedAt; listed by tasks/list.'}
+- {name: ConsumerKey, surface: [rest], description: 'A voluntary X-API-Key minted by POST /api/keys with optional label and contact_email; revocable and erasable.'}
+- {name: PlatformStats, surface: [rest, mcp], description: 'Aggregate counters — totalAgents, activeProducers, cities[], categories; from getPlatformStats / lokal_stats.'}
+
+relationships:
+- {from: Agent, to: Skill, kind: has_many, via: skills}
+- {from: Agent, to: Location, kind: has_one, via: location}
+- {from: Agent, to: Knowledge, kind: has_one, via: data.knowledge}
+- {from: Agent, to: Product, kind: has_many, via: brand / producer profile url}
+- {from: Agent, to: Affiliation, kind: has_many, via: producerId}
+- {from: Umbrella, to: Affiliation, kind: has_many, via: umbrellaId}
+- {from: Umbrella, to: MarketEvent, kind: has_many, via: lokallag_slug}
+- {from: Cart, to: CartItem, kind: has_many, via: cart_id}
+- {from: CartItem, to: Product, kind: belongs_to, via: product_id}
+- {from: Cart, to: Order, kind: has_many, via: cart_id (one Order per producer at submit)}
+- {from: Order, to: Agent, kind: belongs_to, via: producer}
+- {from: Order, to: CartItem, kind: has_many, via: items}
+- {from: Conversation, to: Agent, kind: belongs_to, via: producer agent}
+- {from: Task, to: Conversation, kind: belongs_to, via: message/send}
+- {from: Place, to: Agent, kind: has_many, via: lat/lng radius search}
+
+identity_notes:
+- Agent ids are UUIDs (e.g. 12652bdf-a6a8-4fd6-a790-6951fb317ee9); public profile URLs use a slug (/produsent/ullandhaug-gardsbutikk), and the mapping is only exposed through search results.
+- buyer_ref is a bearer capability, not an identity — whoever holds it owns the cart and its orders.
+- Product ids in the ACP feed (item_id) are the ids lokal_cart_add_item expects (products.id).

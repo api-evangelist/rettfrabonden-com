@@ -1,0 +1,20 @@
+{
+  "result": {
+    "resources": [
+      {
+        "uri": "lokal://producers/overview",
+        "name": "producers-overview",
+        "description": "Overview of all local food producers — count, cities, and categories",
+        "mimeType": "text/plain"
+      },
+      {
+        "uri": "lokal://producers/{agentId}",
+        "name": "producer-detail",
+        "description": "Detailed info about a specific food producer",
+        "mimeType": "application/json"
+      }
+    ]
+  },
+  "jsonrpc": "2.0",
+  "id": 3
+}

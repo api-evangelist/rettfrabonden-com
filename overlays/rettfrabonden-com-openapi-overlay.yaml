@@ -1,0 +1,104 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Rett fra Bonden — Lokal Mat API
+  version: 1.0.0
+  x-generated: '2026-09-19'
+  x-method: generated
+  x-source: >-
+    Our enhancements to the provider's /openapi.yaml, kept separate so the harvested document in
+    openapi/rettfrabonden-com-openapi.yml stays verbatim. Adds tags, MCP tool bindings from
+    mcp/rettfrabonden-com-tool-crosswalk.yml, a machine-readable deprecated flag the provider states only
+    in prose, the security posture from authentication/, and provenance extensions.
+extends: openapi/rettfrabonden-com-openapi.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: rettfrabonden-com
+    x-apievangelist-harvested: '2026-09-19'
+    x-apievangelist-source: https://rettfrabonden.com/openapi.yaml
+    x-apievangelist-sibling-spec: https://rettfrabonden.com/openapi.json
+    contact:
+      url: https://github.com/slookisen/lokal/issues
+      email: kontakt@rettfrabonden.com
+    termsOfService: https://rettfrabonden.com/terms
+    license:
+      name: MIT
+      url: https://github.com/slookisen/lokal/blob/main/LICENSE
+- target: $
+  update:
+    tags:
+    - name: Search
+      description: Natural-language and structured producer discovery
+    - name: Producers
+      description: Producer detail
+    - name: Geocoding
+      description: Norwegian place-name resolution (Kartverket fallback)
+    - name: Catalog
+      description: Product feeds
+    - name: Platform
+      description: Platform statistics
+    externalDocs:
+      description: How it works / MCP setup
+      url: https://rettfrabonden.com/teknologi
+- target: $.paths['/api/marketplace/search'].get
+  update:
+    tags: [Search]
+    x-mcp-tool: lokal_search
+    x-a2a-skill: discover-local-food-agents
+    x-rate-limit-bucket: search-discover (150 / 15 min per IP)
+- target: $.paths['/api/marketplace/discover'].post
+  update:
+    tags: [Search]
+    x-mcp-tool: lokal_discover
+    x-a2a-skill: search-compare-food
+    x-rate-limit-bucket: search-discover (150 / 15 min per IP)
+- target: $.paths['/api/marketplace/discover'].post.responses
+  update:
+    '400':
+      description: Ugyldig søk — request body failed validation (observed live; not declared by the provider)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success: {type: boolean, const: false}
+              error: {type: string}
+              details: {type: array, items: {type: object}}
+- target: $.paths['/api/marketplace/agents/{agentId}/info'].get
+  update:
+    tags: [Producers]
+    x-mcp-tool: lokal_info
+- target: $.paths['/api/marketplace/geocode'].get
+  update:
+    tags: [Geocoding]
+    x-mcp-tool: lokal_geocode
+- target: $.paths['/api/marketplace/catalog/acp-feed.csv'].get
+  update:
+    tags: [Catalog]
+    x-domain-standard: OpenAI Agentic Commerce Protocol product feed (discovery-only)
+- target: $.paths['/api/stats'].get
+  update:
+    tags: [Platform]
+    x-mcp-tool: lokal_stats
+- target: $.paths['/api/marketplace/search'].get.responses['200'].content['application/json'].schema.properties.results.items.properties.distanceKm
+  update:
+    deprecated: true
+- target: $.paths['/api/marketplace/discover'].post.responses['200'].content['application/json'].schema.properties.results.items.properties.distanceKm
+  update:
+    deprecated: true
+- target: $
+  update:
+    components:
+      securitySchemes:
+        producerApiKey:
+          type: apiKey
+          in: header
+          name: X-API-Key
+          description: Producer key issued on registration; required only for write operations. None of the six operations in this document require it.
+        consumerApiKey:
+          type: apiKey
+          in: header
+          name: X-API-Key
+          description: Voluntary consumer key from POST /api/keys; raises the general REST rate limit about 3x. Optional everywhere.
+    security: []
+    x-rate-limit-headers: [RateLimit-Policy, RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset]

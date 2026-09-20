@@ -1,0 +1,103 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://rettfrabonden.com/personvern
+probed:
+- {url: https://rettfrabonden.com/personvern, status: 200}
+- {url: https://rettfrabonden.com/privacy, status: 200, note: English/alias of the same policy}
+- {url: https://rettfrabonden.com/terms, status: 200}
+- {url: https://rettfrabonden.com/proveniens, status: 200, note: data-provenance page; a methodology statement, not a regulatory artifact}
+- {url: https://rettfrabonden.com/accessibility, status: 404}
+- {url: https://rettfrabonden.com/tilgjengelighet, status: 404}
+- {url: https://rettfrabonden.com/legal/subprocessors, status: 404}
+- {url: https://rettfrabonden.com/legal/dpa, status: 404}
+- {url: https://rettfrabonden.com/transparency, status: 404}
+- {url: https://rettfrabonden.com/security, status: 404}
+- {url: https://rettfrabonden.com/security/sbom, status: 404}
+- {url: https://rettfrabonden.com/ai, status: 404}
+- {url: https://rettfrabonden.com/ai/transparency, status: 404}
+- {url: https://rettfrabonden.com/.well-known/security.txt, status: 404}
+signals:
+  data_subject_request:
+    url: https://rettfrabonden.com/personvern
+    section: Dine rettigheter
+    channel: kontakt@rettfrabonden.com
+    rights_named: [innsyn (access), rette feil (rectification — sellers via the dashboard), slette data (erasure), trekke tilbake samtykke (withdraw consent), klage (complaint)]
+    escalation: Datatilsynet (datatilsynet.no)
+    api: https://rettfrabonden.com/api/keys/erase
+    api_scope: consumer API keys only — "GDPR-sletting av label/e-post" (erases the label and contact e-mail attached to a voluntary consumer key); no API for producer or visitor data
+    evidence:
+    - source: https://rettfrabonden.com/personvern
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "Etter personopplysningsloven og GDPR har du rett til å: Be om innsyn — vi kan fortelle deg hva vi har
+        lagret om deg · Rette feil — selgere kan oppdatere sin profil direkte via dashboardet · Slette data —
+        kontakt oss for å få fjernet din profil og tilknyttet data · Trekke tilbake samtykke — du kan når som
+        helst be om å bli fjernet · Klage — du kan klage til Datatilsynet (datatilsynet.no) hvis du mener vi
+        bryter reglene. For alle henvendelser: kontakt@rettfrabonden.com"
+    - source: https://rettfrabonden.com/llms.txt
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: 'POST https://rettfrabonden.com/api/keys/erase (GDPR-sletting av label/e-post). Begge tar { "key": "..." } i body, eller nøkkelen som X-API-Key-header.'
+    note: >-
+      A named channel, named rights, a named supervisory authority, and — unusually — a documented erasure
+      ENDPOINT for one data class. No stated response period, and no dedicated request form (/privacy/requests
+      was not probed because the policy itself is the intake). Recorded as published; whether GDPR applies is
+      decided by the regime map, not here.
+  data_residency:
+    url: https://rettfrabonden.com/personvern
+    section: Hvor data lagres
+    regions: [eu]
+    provider: Fly.io, Stockholm region (ARN), SQLite database
+    stated_exceptions:
+    - e-mail delivery via an SMTP service (verification codes, magic links)
+    - image scanning, if enabled, may send images to Anthropic (USA) or OpenAI (USA)
+    evidence:
+    - source: https://rettfrabonden.com/personvern
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "All data lagres i en SQLite-database på en server hostet av Fly.io i Stockholm-regionen (ARN). Data
+        overføres ikke til land utenfor EU/EØS, med unntak av: E-post sendes via SMTP-tjeneste for å levere
+        verifiseringskoder og magiske lenker · Hvis bildeskanning er aktivert, kan bilder sendes til Anthropic
+        (USA) eller OpenAI (USA) for analyse"
+    note: A single-region statement with its transfer exceptions named; no region selection is offered to customers.
+  subprocessors:
+    url: https://rettfrabonden.com/personvern
+    section: Hvor data lagres / Bilder
+    dated: '2026-04-16'
+    entries:
+    - {vendor: Fly.io, purpose: hosting (server and SQLite database), location: Stockholm (ARN), EU}
+    - {vendor: SMTP service (unnamed), purpose: transactional e-mail — verification codes and magic links, location: not stated}
+    - {vendor: Anthropic, purpose: optional image scanning for product recognition, location: USA}
+    - {vendor: OpenAI, purpose: optional image scanning for product recognition, location: USA}
+    evidence:
+    - source: https://rettfrabonden.com/personvern
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: 'Hvis bildeskanning er aktivert, kan bildet sendes til en ekstern AI-tjeneste (Anthropic Claude eller OpenAI) for automatisk produktgjenkjenning.'
+    note: >-
+      The third parties that process data are named with purpose and location inside a dated privacy policy
+      ("Sist oppdatert: 16. april 2026"); the e-mail provider is described but not named. This is the substance
+      of a subprocessor list, not a formal Art. 28 table — /legal/subprocessors and /legal/dpa both 404 — so it is
+      recorded with that caveat rather than omitted.
+absent:
+  sbom: not published (search only; /security/sbom 404; no SBOM in the repository root)
+  support_lifetime: no support period or versioning page (lifecycle/)
+  accessibility_conformance: /accessibility and /tilgjengelighet 404; no VPAT or WCAG statement found
+  training_data_summary: >-
+    none. robots.txt carries "Content-Signal: … ai-train=no", which is a usage PREFERENCE the provider
+    expresses toward crawlers, not a summary of training data the provider used — not recorded as this signal.
+  ai_transparency: >-
+    none as a statement. The privacy page discloses that image scanning may use Anthropic Claude or OpenAI, and
+    the provenance page states "KI-gjetninger er aldri nok alene" (AI guesses never count as evidence) — a data
+    methodology, not an AI-interaction disclosure — so no AITransparency pointer is emitted.
+  global_privacy_control: no published statement (the policy says no cookies and no third-party tracking, which is not a GPC commitment)
+  incident_notification: none
+  age_assurance: none
+  notice_and_action: none (terms §6 lets a PRODUCER request update/removal of their own listing — a data-subject route, not a DSA notice-and-action channel)
+  transparency_report: none
+  exit_assistance: >-
+    none for customers. The producer data itself is exportable (/llms-full.txt, the ACP CSV feed, "fri å bruke
+    for søk og sitering"), but that is open data, not a customer's own data portability.

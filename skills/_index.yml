@@ -1,0 +1,37 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  SEARCHED first: the provider publishes an agentskills.io v0.2.0 skills index at
+  https://rettfrabonden.com/.well-known/agent-skills/index.json (saved verbatim as
+  rettfrabonden-com-agent-skills-index.json) with four skills and per-skill invocation blocks. It is a
+  discovery index, not step-by-step operating instructions, and two of its MCP tool names do not exist on
+  the live server, so three packaged skills were GENERATED alongside it — every REST step grounded in an
+  operationId grep-verified in openapi/, every MCP step in a tool name from the live tools/list capture in
+  mcp/rettfrabonden-com-mcp-tools.json, and the cross-cutting rules cited from conventions/, errors/,
+  rate-limits/ and authentication/.
+provider_published:
+  file: rettfrabonden-com-agent-skills-index.json
+  url: https://rettfrabonden.com/.well-known/agent-skills/index.json
+  schema: https://agentskills.io/schemas/v0.2.0/index.schema.json
+  method: searched
+  skills: [discover-local-food-agents, register-food-agent, search-compare-food, agent-conversation]
+  note: invocation.mcp.tool names search_producers and discover_by_category are not served; the live equivalents are lokal_search and lokal_discover.
+skills:
+- file: rettfrabonden-com-find-local-producers.md
+  name: Find local producers near a Norwegian place
+  method: generated
+  api: openapi/rettfrabonden-com-openapi.yml
+  operations: [geocodePlace, discoverProducers, searchFood, getProducerInfo]
+  mcp_tools: [lokal_geocode, lokal_discover, lokal_search, lokal_info]
+- file: rettfrabonden-com-shopping-list-to-pickup-order.md
+  name: Turn a shopping list into pickup orders
+  method: generated
+  api: mcp/rettfrabonden-com-mcp.yml
+  operations: []
+  mcp_tools: [lokal_find_offers, lokal_cart_create, lokal_cart_add_item, lokal_cart_view, lokal_cart_submit, lokal_order_status]
+- file: rettfrabonden-com-markets-and-certifications.md
+  name: Answer market-day and certification questions
+  method: generated
+  api: mcp/rettfrabonden-com-mcp.yml
+  operations: []
+  mcp_tools: [lokal_list_umbrellas, lokal_get_umbrella_members, lokal_get_producer_affiliations, lokal_bm_next_markets]

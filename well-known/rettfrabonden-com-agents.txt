@@ -1,0 +1,28 @@
+# agents.txt — rettfrabonden.com
+# AI Agent Discovery File
+# See: https://github.com/dennj/agents.txt
+
+User-agent: *
+Allow-actions: search, read, discover, compare
+Disallow-actions: modify, delete, register-without-key
+
+# Agent endpoints
+Agent-card: https://rettfrabonden.com/.well-known/agent-card.json
+MCP-endpoint: https://rettfrabonden.com/mcp
+MCP-server-card: https://rettfrabonden.com/.well-known/mcp/server-card.json
+A2A-endpoint: https://rettfrabonden.com/a2a
+API-base: https://rettfrabonden.com/api/marketplace
+
+# Capabilities
+Name: Rett fra Bonden
+Description: Local food marketplace with 1657+ producers in Norway
+Languages: no, en
+Categories: food, marketplace, local-commerce, organic, farm-direct
+Region: NO
+
+# Rate limits
+Rate-limit: 300 requests per 15 minutes (general)
+Rate-limit: 500 requests per hour (admin)
+
+# Contact
+Contact: https://github.com/slookisen/lokal/issues

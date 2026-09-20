@@ -1,0 +1,185 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://rettfrabonden.com/llms.txt, https://rettfrabonden.com/teknologi, https://github.com/slookisen/lokal
+  (README: rate limits, CORS, sessions), https://rettfrabonden.com/terms, the two OpenAPI documents, the
+  live MCP tools/list (annotations) and response headers observed on 2026-09-19. Where OpenAPI implies a
+  convention it is marked derived; where a page states it, the page is cited.
+description: >-
+  How Rett fra Bonden's three surfaces behave across operations: open reads with an optional key,
+  no idempotency contract, offset pagination on one list, IETF RateLimit headers, a {success,error}
+  envelope, bilingual (NO/EN) inputs and messages, an explicit geographic honesty rule, and a
+  reversibility posture that is documented for keys and listings but absent for orders.
+
+base_url: https://rettfrabonden.com/api/marketplace
+api_style: REST over HTTPS with JSON bodies, plus JSON-RPC 2.0 at /a2a and MCP Streamable HTTP at /mcp — all on the apex host
+
+authentication:
+  scheme: X-API-Key header (producer key from registration; optional consumer key from POST /api/keys); reads need nothing
+  key_types: [producer key (write), consumer key (voluntary; rate-limit tier), X-Admin-Key (operator)]
+  docs: https://rettfrabonden.com/llms.txt
+  detail: authentication/rettfrabonden-com-authentication.yml
+
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  applies_to: []
+  scope: []
+  docs: null
+  notes: >-
+    No Idempotency-Key header or parameter appears in either OpenAPI or any provider document, and no
+    write documents replay protection. The MCP tool annotations are honest about this: every read tool
+    except lokal_search/lokal_discover/lokal_find_offers carries idempotentHint true; all three cart writes
+    (lokal_cart_create, lokal_cart_add_item, lokal_cart_submit) carry idempotentHint false. The one
+    naturally idempotent write is lokal_cart_add_item, which upserts by product_id ("re-adding the same
+    product_id updates qty") — a per-tool property, not a mechanism an agent can apply to the mutating
+    surface, so coverage is none and no Idempotency pointer is emitted.
+
+dry_run:
+  supported: false
+  notes: >-
+    No dry-run, preview or validate mode. The closest behaviour is lokal_cart_view before lokal_cart_submit
+    (review, not rehearsal) and submit's own re-check of stock, which rejects rather than previews.
+
+reversibility:
+  grade: documented
+  docs: https://rettfrabonden.com/llms.txt
+  note: >-
+    A reversal path exists for two of the four write surfaces — the consumer key (an API operation) and
+    the producer listing (an e-mail process in the Terms) — and NO window is stated for either, so the
+    grade is documented (0.4), not verified. The order flow has no buyer-side cancel at all. Nothing below
+    asserts a window the provider has not written down.
+  write_surfaces:
+  - operation: POST /api/keys (consumer key issuance)
+    action: Mint a voluntary consumer-identity key
+    reversal: POST /api/keys/revoke (stops the key, keeps history) or POST /api/keys/erase (GDPR erasure of label and contact e-mail)
+    reversal_operation: 'POST /api/keys/revoke, POST /api/keys/erase'
+    window: null
+    stated_terms:
+    - source: https://rettfrabonden.com/llms.txt
+      verbatim: 'Tilbakekall/slett: POST https://rettfrabonden.com/api/keys/revoke (stanser nøkkelen, historikk beholdes) eller POST https://rettfrabonden.com/api/keys/erase (GDPR-sletting av label/e-post).'
+    grade: documented
+    note: 'The key can be revoked "any time" (English text: "revoke/erase it any time"); "any time" is an absence of a deadline, not a window, so no window is recorded.'
+  - operation: registerProducer (POST /api/marketplace/register)
+    action: Create a producer agent listing (key-gated)
+    reversal: removal or update on request to kontakt@rettfrabonden.com; owners can edit via the dashboard after e-mail verification
+    reversal_operation: null
+    window: null
+    stated_terms:
+    - source: https://rettfrabonden.com/terms
+      clause: '6. Produsentrettigheter'
+      verbatim: 'Er du produsent og ønsker å oppdatere, fjerne eller overta din egen oppføring? Kontakt oss på kontakt@rettfrabonden.com.'
+    grade: documented
+    note: No API operation deletes a listing; the reversal is a human process with no stated turnaround.
+  - operation: lokal_cart_create / lokal_cart_add_item (MCP)
+    action: Build an anonymous cart
+    reversal: quantity can be changed by re-adding the product_id; the cart expires on its own
+    reversal_operation: lokal_cart_add_item (qty update)
+    window: '7 days (cart validity)'
+    stated_terms:
+    - source: mcp/rettfrabonden-com-mcp-tools.json
+      verbatim: 'Each cart is valid for 7 days.'
+    grade: documented
+    note: >-
+      No remove-item or delete-cart tool is exposed; the 7-day figure is the cart's lifetime, not a
+      window for reversing an action, so it is recorded but does not lift the grade. Setting qty to 0
+      is not documented as removal.
+  - operation: lokal_cart_submit (MCP)
+    action: Place pickup orders, one per producer; opted-in sellers are e-mailed
+    reversal: none documented for the buyer
+    reversal_operation: null
+    window: null
+    stated_terms:
+    - source: mcp/rettfrabonden-com-mcp-tools.json
+      verbatim: 'Status: pending → confirmed → ready → completed (or declined/cancelled; cancel_reason=''no_show'' means the buyer did not pick up).'
+    grade: none
+    note: >-
+      Cancellation exists as a seller/system state (declined, cancelled, no_show) that lokal_order_status
+      reports, but no tool lets the buyer cancel or amend a submitted order. No payment is charged, which
+      bounds the financial consequence, and the Terms state the operator "is not party to the purchase".
+  - operation: A2A message/send (start a conversation with a producer)
+    action: Send a message to a producer agent; conversations are stored (privacy page) and visible at /samtale/{id}
+    reversal: none documented
+    reversal_operation: null
+    window: null
+    grade: none
+
+pagination:
+  style: offset (one operation) / limit-only elsewhere
+  request_params:
+    limit: 'listProducers default 50; searchFood/discoverProducers default 20; MCP tools default 10, max 50'
+    offset: listProducers only (default 0)
+  response_fields:
+    count: number of results returned (search/discover)
+    results: array
+  notes: No cursor, no total, no next link. Derived from openapi/rettfrabonden-com-agent-surface-openapi.json#listProducers and the search/discover schemas.
+
+field_expansion:
+  supported: false
+  notes: Producer detail is a separate call (getProducerInfo / lokal_info); search results carry a summary agent object.
+
+metadata:
+  supported: false
+
+request_tracing:
+  request_id_header: null
+  notes: No request-id header was observed on any response (headers seen — server Fly/…, via 2 fly.io, RateLimit-*, strict-transport-security). Support asks for "the request payload and the response status code" on GitHub issues.
+
+versioning:
+  scheme: nominal v1 label; no version segment in routes
+  current: v1
+  detail: lifecycle/rettfrabonden-com-lifecycle.yml
+  docs: https://rettfrabonden.com/api
+
+error_envelope:
+  media_type: application/json
+  shape: '{ "success": false, "error": string, "details"?: [zod issues] }'
+  html_fallthrough: unknown routes return text/html "Cannot GET …" (Express default)
+  detail: errors/rettfrabonden-com-problem-types.yml
+
+rate_limit_signaling:
+  headers: [RateLimit-Policy, RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset]
+  standard: 'IETF draft-ietf-httpapi-ratelimit-headers (observed ''RateLimit-Policy: 300;w=900'')'
+  exhausted_status: 429 (documented; not observed)
+  detail: rate-limits/rettfrabonden-com-rate-limits.yml
+
+sessions:
+  mcp: Stateful — initialize returns Mcp-Session-Id, required on every later request; tools/list without it is HTTP 404 / -32001.
+  cart: The buyer_ref capability token returned by lokal_cart_create is the only handle on a cart and "cannot be recovered".
+
+cors:
+  browser_origins_allowed: [https://claude.ai, https://www.claude.ai, https://chatgpt.com, https://chat.openai.com]
+  source: https://github.com/slookisen/lokal#readme (Troubleshooting)
+
+localisation:
+  input_languages: [no, en]
+  notes: >-
+    Queries and place names are accepted in Norwegian or English; error strings mix Norwegian top-level
+    messages with English validator messages; the README warns that accents matter ("økologisk" not
+    "okologisk"). The site is served in Norwegian by default with /en for English.
+
+geographic_honesty:
+  rule: >-
+    distanceKm is returned ONLY when geoPrecision is "address" (geocoded from a real street address via
+    Kartverket); for city/kommune/postal centroids it is omitted on purpose and distanceLabel carries a
+    phrase such as "i Vadsø-området" instead. The spec's own words: a kilometre figure from a municipal
+    centroid "would be a number we invented".
+  source: openapi/rettfrabonden-com-openapi.yml (searchFood, discoverProducers response schemas)
+  agent_guidance: Show distanceLabel verbatim; never compute distance from centroid coordinates yourself.
+
+side_effects:
+  searchFood: Read-only by default; start_conversation=true opts into messaging the top matches (spec). The MCP tool lokal_search description in the Smithery/npm variant says it "starts a conversation with the producer" — the live remote tool's annotations mark it readOnlyHint true.
+  lokal_cart_submit: openWorldHint true — e-mails opted-in sellers.
+
+transport_security:
+  hsts_observed: 'strict-transport-security: max-age=31536000; includeSubDomains on /api/marketplace/search (2026-09-19)'
+  note: security/rettfrabonden-com-domain-security.yml recorded hsts null from its HEAD of the site root; the header is present on API responses.
+
+cross_links:
+  errors: errors/rettfrabonden-com-problem-types.yml
+  lifecycle: lifecycle/rettfrabonden-com-lifecycle.yml
+  authentication: authentication/rettfrabonden-com-authentication.yml
+  rate_limits: rate-limits/rettfrabonden-com-rate-limits.yml
+  mcp: mcp/rettfrabonden-com-mcp.yml
+  crosswalk: mcp/rettfrabonden-com-tool-crosswalk.yml

@@ -1,0 +1,141 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived by aligning the LIVE MCP tool list (tools/list captured 2026-09-19 in
+  mcp/rettfrabonden-com-mcp-tools.json, 15 tools with inputSchema) and the four A2A skills in
+  a2a/rettfrabonden-com-agent-card.json against the operationIds in the two first-party OpenAPI
+  documents — openapi/rettfrabonden-com-openapi.yml (/openapi.yaml, 6 operations) and
+  openapi/rettfrabonden-com-agent-surface-openapi.json (/openapi.json, 8 operations, 13 unique ids
+  across both). Nothing here was gated: MCP tools/list is anonymous, so every binding is by observed
+  schema, not by name alone.
+purpose: >-
+  Bind each agent-facing tool to the REST operation whose parameters + requestBody are its real input
+  contract, and record the tools that have NO published REST operation. For Rett fra Bonden the MCP
+  surface is the widest of the three: ten of fifteen tools (umbrellas, market days, shopping-list
+  offers, cart and orders) have no operation in either published OpenAPI, so an agent reading only the
+  REST contract sees a third of what the MCP server can do.
+surfaces:
+  rest_openapi:
+  - openapi/rettfrabonden-com-openapi.yml             # /openapi.yaml — searchFood, discoverProducers, getProducerInfo, geocodePlace, getAcpProductFeed, getPlatformStats
+  - openapi/rettfrabonden-com-agent-surface-openapi.json   # /openapi.json — searchProducers, listProducers, getProducer, discoverProducers, registerProducer, a2aJsonRpc, mcpEndpoint, getAgentCard
+  mcp: https://rettfrabonden.com/mcp                  # tools/list open (after initialize); 15 tools
+  a2a: https://rettfrabonden.com/a2a                  # JSON-RPC 2.0; message/send, tasks/get, tasks/list; anonymous
+  graphql: null                                        # no GraphQL surface (/graphql 404)
+crosswalk:
+- tool: lokal_search
+  category: search
+  rest: [searchFood, searchProducers]
+  binding: rest
+  confidence: high
+  note: >-
+    searchFood (/openapi.yaml) is the richer contract — q, lat, lng, radius, heleNorge, start_conversation,
+    limit — and matches the tool's query/lat/lng/radius_km/limit one-for-one. searchProducers (/openapi.json)
+    is the same GET /api/marketplace/search with only q + limit declared.
+- tool: lokal_discover
+  category: search
+  rest: [discoverProducers]
+  binding: rest
+  confidence: high
+  note: >-
+    Same operationId in both specs (POST /api/marketplace/discover). The tool's drinkSubcategory enum
+    (bryggeri|cideri|vingård|destilleri|gårdskafé|mjød) and the "beverages" category are NOT in either
+    REST schema — the MCP tool is ahead of the published contract. /openapi.json nests lat/lng under
+    location{}; /openapi.yaml and the tool use top-level lat/lng; the live endpoint accepted the flat form.
+- tool: lokal_info
+  category: lookup
+  rest: [getProducerInfo, getProducer]
+  binding: rest
+  confidence: high
+  note: >-
+    getProducerInfo is GET /api/marketplace/agents/{agentId}/info (/openapi.yaml, knowledge block with
+    address, products, openingHours, certifications, paymentMethods, deliveryOptions). getProducer is
+    GET /api/marketplace/agents/{id} in /openapi.json; a live GET on that path with an unknown id
+    returned an Express HTML 404 ("Cannot GET"), so the /info form is the one the tool's shape matches.
+- tool: lokal_stats
+  category: platform
+  rest: [getPlatformStats]
+  binding: rest
+  confidence: high
+  note: GET /api/stats. Live response is a larger object (registry stats + zeroed inventory counters) than the spec's totalAgents/totalCities/totalInteractions triple.
+- tool: lokal_geocode
+  category: geo
+  rest: [geocodePlace]
+  binding: rest
+  confidence: high
+  note: GET /api/marketplace/geocode?place=…; the spec's 200/400/404 responses were all observed live (Oslo -> hardcoded source; unknown place -> 404 JSON; missing place -> 400 JSON).
+mcp_only:
+- tool: lokal_find_offers
+  reason: >-
+    Server-side composite over the search index (one call fans out over a shopping list, returns up to
+    5 producers per item plus a can_order flag). No published REST operation returns can_order or accepts
+    an item list.
+- tool: lokal_list_umbrellas
+  reason: No umbrella/organisation operation in either published OpenAPI. The source tree has admin-affiliations routes, but they are admin surfaces, not the public contract.
+- tool: lokal_get_umbrella_members
+  reason: As above — umbrella membership is reachable only through MCP.
+- tool: lokal_get_producer_affiliations
+  reason: As above.
+- tool: lokal_bm_next_markets
+  reason: Bondens marked event calendar (refreshed daily from bondensmarked.no) has no published REST operation.
+- tool: lokal_cart_create
+  reason: >-
+    The cart / pickup-order flow exists in the source (src/routes/marketplace-cart.ts) but is not in
+    either published OpenAPI; its REST paths are not documented anywhere public, so none is asserted here.
+- tool: lokal_cart_add_item
+  reason: Cart flow — see lokal_cart_create.
+- tool: lokal_cart_view
+  reason: Cart flow — see lokal_cart_create.
+- tool: lokal_cart_submit
+  reason: 'Cart flow — see lokal_cart_create. This is the only openWorldHint tool: it emails opted-in sellers.'
+- tool: lokal_order_status
+  reason: Order flow — see lokal_cart_create.
+a2a_skills:
+- skill: discover-local-food-agents
+  rest: [searchFood, searchProducers]
+  mcp: [lokal_search]
+  binding: rest
+  confidence: high
+  note: The provider's own agent-skills index binds this skill to REST GET /api/marketplace/search and to an MCP tool named search_producers, which does not exist on the live server; lokal_search is the tool that does.
+- skill: search-compare-food
+  rest: [searchFood, discoverProducers]
+  mcp: [lokal_search, lokal_discover]
+  binding: rest
+  confidence: medium
+  note: Index binds to search + a phantom discover_by_category tool; the live equivalents are lokal_search and lokal_discover.
+- skill: register-food-agent
+  rest: [registerProducer]
+  mcp: []
+  binding: rest
+  confidence: high
+  note: POST /api/marketplace/register, key-gated per the card. No MCP tool performs registration; the server card's register_producer tool does not exist live.
+- skill: agent-conversation
+  rest: [a2aJsonRpc]
+  mcp: []
+  binding: a2a
+  confidence: medium
+  note: >-
+    A2A message/send is the only documented path. The skill detail document names REST
+    /api/marketplace/conversations, which returns 404 on GET; conversations are visible to humans at
+    /samtaler and /samtale/{id}.
+rest_only:
+- capability: producer listing
+  operations: [listProducers]
+  note: GET /api/marketplace/agents?limit&offset — the only paginated list; no MCP tool enumerates producers without a query.
+- capability: producer registration
+  operations: [registerProducer]
+  note: key-gated write; reachable via REST and the A2A register-food-agent skill.
+- capability: ACP product feed
+  operations: [getAcpProductFeed]
+  note: CSV feed of in-stock products from verified producers for ChatGPT shopping surfaces; the product ids it carries are what lokal_cart_add_item consumes.
+- capability: protocol endpoints described as operations
+  operations: [a2aJsonRpc, mcpEndpoint, getAgentCard]
+  note: /openapi.json describes the A2A endpoint, the MCP endpoint and the agent card as REST operations, which is how the contract advertises the other two surfaces.
+coverage:
+  mcp_tools: 15
+  mcp_tools_bound_to_rest: 5
+  mcp_only: 10
+  a2a_skills: 4
+  a2a_skills_bound: 4
+  rest_operations_total: 13
+  rest_operations_with_tool: 7
+  rest_only: 6

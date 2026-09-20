@@ -1,0 +1,95 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Response headers observed live on 2026-09-19 (GET /api/marketplace/search?q=egg -> RateLimit-Policy
+  300;w=900, RateLimit-Limit 300, RateLimit-Remaining 286, RateLimit-Reset 696; POST /a2a tasks/list ->
+  RateLimit-Policy 200;w=900, RateLimit-Limit 200, RateLimit-Remaining 196, RateLimit-Reset 586), cross-read
+  with the published numbers in https://rettfrabonden.com/llms.txt ("Frivillig API-nøkkel"), the README
+  Troubleshooting section at https://github.com/slookisen/lokal, https://rettfrabonden.com/api (rate_limits
+  block) and https://rettfrabonden.com/.well-known/agents.txt.
+docs:
+- https://rettfrabonden.com/llms.txt
+- https://github.com/slookisen/lokal#readme
+- https://rettfrabonden.com/api
+api: Rett fra Bonden Local Food API (+ /a2a and /mcp on the same host)
+summary: >-
+  Three per-IP buckets on 15-minute fixed windows, signalled with IETF RateLimit headers on every
+  response: a general REST bucket (300, observed), an /a2a bucket (200, observed) and a static search +
+  discover bucket (150, documented; MCP tools/call counts against it). A free, voluntary consumer key
+  raises the first two by about 3x (900 / 600) and does not touch the third. An operator "admin" bucket
+  of 500 per hour is published but is not a consumer surface. Exhaustion is documented as throttling
+  (429) rather than blocking; no Retry-After is documented and none was observed because no bucket was
+  exhausted by this pass.
+published_numeric_limits: true
+limits:
+- name: General REST API (anonymous)
+  scope: per-IP
+  applies_to: '/api/* except search and discover'
+  limit: 300
+  window: 15 minutes
+  interval: 900 seconds
+  burst: null
+  evidence: observed RateLimit-Policy 300;w=900 on /api/marketplace/search (the header was served on that path even though the documented bucket for it is the 150 one — see note)
+- name: A2A JSON-RPC endpoint (anonymous)
+  scope: per-IP
+  applies_to: /a2a
+  limit: 200
+  window: 15 minutes
+  interval: 900 seconds
+  burst: null
+  evidence: observed RateLimit-Policy 200;w=900 on POST /a2a
+- name: Search and discover (static, per IP)
+  scope: per-IP
+  applies_to: '/api/marketplace/search, /api/marketplace/discover, MCP tools/call'
+  limit: 150
+  window: 15 minutes
+  interval: 900 seconds
+  burst: null
+  evidence: 'README: "Public endpoints allow 150 searches and 300 general API calls per 15-minute window. MCP tools/call counts against the search bucket"; llms.txt: "en egen, flat kvote (150) som IKKE økes av forbrukernøkkelen"'
+  note: Documented, not observed as a separate header value — the search response carried the 300 policy header; whether the 150 quota is enforced by a second, unadvertised counter could not be told from one request.
+- name: General REST API (consumer key)
+  scope: per-key
+  applies_to: '/api/* except search and discover'
+  limit: 900
+  window: 15 minutes
+  interval: 900 seconds
+  burst: null
+  evidence: 'llms.txt: "ca. 3x høyere rate-grense (300→900 på generelt REST-API …)"'
+- name: A2A JSON-RPC endpoint (consumer key)
+  scope: per-key
+  applies_to: /a2a
+  limit: 600
+  window: 15 minutes
+  interval: 900 seconds
+  burst: null
+  evidence: 'llms.txt: "… 200→600 på /a2a"'
+- name: Admin (operator credential)
+  scope: per-key
+  applies_to: admin routes (X-Admin-Key)
+  limit: 500
+  window: 1 hour
+  interval: 3600 seconds
+  burst: null
+  evidence: '/api index rate_limits.admin "500 requests / hour"; agents.txt "Rate-limit: 500 requests per hour (admin)"'
+  note: Not a consumer surface; recorded because the provider publishes it.
+headers:
+  policy: RateLimit-Policy
+  limit: RateLimit-Limit
+  remaining: RateLimit-Remaining
+  reset: RateLimit-Reset
+  reset_unit: seconds until the window resets
+  standard: IETF draft-ietf-httpapi-ratelimit-headers
+  present_on: every REST and /a2a response observed
+  example: 'ratelimit-policy: 300;w=900 / ratelimit-limit: 300 / ratelimit-remaining: 286 / ratelimit-reset: 696'
+responseCodes:
+  throttled: 429
+exceeded:
+  status: 429
+  header: null
+  observed: false
+  guidance: >-
+    README: "If your agent hits the limit, back off for 15 minutes — we don't block IPs, only throttle."
+    Read RateLimit-Remaining and RateLimit-Reset on every response and pause when Remaining reaches 0.
+mcp_note: >-
+  MCP tools/call is billed to the search bucket per the README; the MCP transport itself returned no
+  RateLimit headers on the SSE initialize response captured by this pass.

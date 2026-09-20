@@ -1,0 +1,219 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://rettfrabonden.com/mcp
+docs: https://rettfrabonden.com/teknologi#mcp-oppsett
+summary: >-
+  Rett fra Bonden operates a remote MCP server at https://rettfrabonden.com/mcp (Streamable HTTP,
+  stateful sessions) that answers initialize and tools/list anonymously and exposes FIFTEEN tools
+  and two resources over the Norwegian local-food producer registry — search, structured discovery,
+  producer detail, umbrella organisations (Bondens marked, REKO, Hanen, Debio), upcoming farmers'
+  market days, geocoding, shopping-list offers, and an anonymous cart -> pickup-order flow. The
+  same tools ship as the npm stdio package lokal-mcp and are mirrored on Smithery. The live tool
+  list was captured verbatim with full inputSchema and annotations in rettfrabonden-com-mcp-tools.json.
+deployment:
+  mode: both
+  endpoint: https://rettfrabonden.com/mcp
+  install: npx lokal-mcp
+  package: https://www.npmjs.com/package/lokal-mcp
+  auth: none
+  verified: probed
+  note: >-
+    Remote: POST https://rettfrabonden.com/mcp with an initialize request returned 200 (text/event-stream,
+    protocolVersion 2025-06-18, serverInfo rett-fra-bonden 0.4.0) and an Mcp-Session-Id header; with that
+    header, tools/list returned 15 tools and resources/list returned 2 resources, no credential sent.
+    Local: the provider's own docs (/teknologi "Metode 2", README) give the Claude Desktop config
+    {"command":"npx","args":["lokal-mcp"]} and the package is live on npm (0.4.0, 2026-05-15). auth is
+    none because every tool — including the cart writes — was listed without a key; X-API-Key is
+    OPTIONAL on this surface and only raises the rate-limit ceiling (producer registration, the one
+    key-gated write, is not an MCP tool).
+servers:
+- id: rettfrabonden-remote
+  name: rett-fra-bonden
+  endpoint: https://rettfrabonden.com/mcp
+  transport: streamable-http
+  auth: none
+  status: live
+  probe:
+    fetched: '2026-09-19'
+    initialize:
+      http_status: 200
+      content_type: text/event-stream
+      protocol_version_negotiated: '2025-06-18'
+      server_info: {name: rett-fra-bonden, version: 0.4.0}
+      capabilities: {tools: {listChanged: true}, resources: {listChanged: true}}
+      session_header: Mcp-Session-Id
+    tools_list: {http_status: 200, tools: 15, file: rettfrabonden-com-mcp-tools.json}
+    resources_list: {http_status: 200, resources: 2, file: rettfrabonden-com-mcp-resources.json}
+    prompts_list: {http_status: 200, error: -32601 Method not found}
+    without_session: >-
+      tools/list POSTed without a prior initialize returns HTTP 404 with JSON-RPC error -32001
+      "Session not found". Sessions are required and sticky (README: "session IDs are sticky per
+      connection").
+    cors: >-
+      README: browser clients must send an Origin header; allow-listed origins are https://claude.ai,
+      https://www.claude.ai, https://chatgpt.com and https://chat.openai.com.
+  tools:
+  - name: lokal_search
+    read_only: true
+    idempotent_hint: false
+    required: []
+    inputs: [query, lat, lng, radius_km, limit]
+    description: Natural-language producer/product search (NO/EN); returns listed products, contact info, opening hours; price only when the producer wrote one.
+  - name: lokal_discover
+    read_only: true
+    idempotent_hint: false
+    required: []
+    inputs: [categories, tags, drinkSubcategory, lat, lng, maxDistanceKm, limit]
+    description: Structured search by category (vegetables, fruit, berries, dairy, eggs, meat, fish, bread, honey, herbs, beverages), tags and geo radius; drinkSubcategory enum bryggeri|cideri|vingård|destilleri|gårdskafé|mjød.
+  - name: lokal_info
+    read_only: true
+    idempotent_hint: true
+    required: [agentId]
+    inputs: [agentId]
+    description: A producer's full listed product catalogue, contact details, opening hours and delivery options.
+  - name: lokal_stats
+    read_only: true
+    idempotent_hint: true
+    required: []
+    inputs: []
+    description: Platform statistics — total agents, cities covered, interactions.
+  - name: lokal_list_umbrellas
+    read_only: true
+    idempotent_hint: true
+    required: []
+    inputs: [umbrellaType, limit]
+    description: Umbrella organisations — market networks (Bondens marked, REKO), venues (Mathallen), industry orgs (Hanen), certifiers (Debio), cooperatives; umbrellaType enum market_network|venue|industry_org|certification|cooperative.
+  - name: lokal_get_umbrella_members
+    read_only: true
+    idempotent_hint: true
+    required: [umbrellaId]
+    inputs: [umbrellaId, limit]
+    description: Producers that are members of one umbrella (all Debio-certified producers, all Mathallen tenants, ...).
+  - name: lokal_get_producer_affiliations
+    read_only: true
+    idempotent_hint: true
+    required: [producerId]
+    inputs: [producerId]
+    description: Umbrella organisations a producer belongs to (which markets it sells at, which certifications it holds).
+  - name: lokal_bm_next_markets
+    read_only: true
+    idempotent_hint: true
+    required: []
+    inputs: [region, lokallag_slug, days]
+    description: Upcoming Bondens marked market days for a region or lokallag; refreshed daily from bondensmarked.no; days default 30, max 90.
+  - name: lokal_geocode
+    read_only: true
+    idempotent_hint: true
+    required: [place]
+    inputs: [place]
+    description: Resolve a Norwegian place name (city, region, fylke, kommune) to lat/lng plus a suggested radius; Kartverket Stedsnavn fallback.
+  - name: lokal_find_offers
+    read_only: true
+    idempotent_hint: false
+    required: [items]
+    inputs: [items, near, lat, lng, radius_km]
+    description: For each shopping-list item, up to 5 nearby producers who sell it, sorted by distance, with can_order flag.
+  - name: lokal_cart_create
+    read_only: false
+    idempotent_hint: false
+    required: []
+    inputs: []
+    description: Create an anonymous cart; returns cart_id and a buyer_ref capability token that cannot be recovered; cart valid 7 days.
+  - name: lokal_cart_add_item
+    read_only: false
+    idempotent_hint: false
+    required: [cart_id, buyer_ref, product_id, qty]
+    inputs: [cart_id, buyer_ref, product_id, qty, note]
+    description: Add a product or update its quantity (re-adding the same product_id updates qty); product must be in_stock from a verified non-umbrella producer.
+  - name: lokal_cart_view
+    read_only: true
+    idempotent_hint: true
+    required: [cart_id, buyer_ref]
+    inputs: [cart_id, buyer_ref]
+    description: Cart contents grouped by producer with subtotals and total.
+  - name: lokal_cart_submit
+    read_only: false
+    idempotent_hint: false
+    open_world_hint: true
+    required: [cart_id, buyer_ref]
+    inputs: [cart_id, buyer_ref]
+    description: Create pickup orders, one per producer; re-checks availability; no payment charged; opted-in sellers are emailed and can confirm/decline.
+  - name: lokal_order_status
+    read_only: true
+    idempotent_hint: true
+    required: [order_id, buyer_ref]
+    inputs: [order_id, buyer_ref]
+    description: Status, items and timeline of a pickup order — pending -> confirmed -> ready -> completed, or declined/cancelled (cancel_reason no_show).
+  resources:
+  - uri: lokal://producers/overview
+    name: producers-overview
+    mime_type: text/plain
+  - uri: lokal://producers/{agentId}
+    name: producer-detail
+    mime_type: application/json
+discovery_documents:
+- url: https://rettfrabonden.com/.well-known/mcp/server-card.json
+  file: ../well-known/rettfrabonden-com-mcp-server-card.json
+  note: SEP-1649-shaped server card; also at /.well-known/mcp.json. Declares supportedProtocolVersions 2025-11-25 .. 2024-10-07 and modernEraSupported false ("does NOT yet support the 2026-07-28 era").
+- url: https://rettfrabonden.com/.well-known/mcp
+  file: ../well-known/rettfrabonden-com-mcp.json
+- url: https://rettfrabonden.com/.well-known/api-catalog
+  file: ../well-known/rettfrabonden-com-api-catalog.json
+  note: RFC 9727 linkset anchors /mcp with service-desc -> the server card.
+- url: https://rettfrabonden.com/.well-known/agents.txt
+  file: ../well-known/rettfrabonden-com-agents.txt
+distributions:
+- channel: npm
+  package: lokal-mcp
+  version: 0.4.0
+  published: '2026-05-15'
+  install: npx lokal-mcp
+  transport: stdio
+  url: https://www.npmjs.com/package/lokal-mcp
+  source: https://github.com/slookisen/lokal/tree/main/mcp-server
+  note: The repository's mcp-server/package.json already reads 0.4.1 (unpublished as of 2026-09-19); the README in the package describes four tools and two resources.
+- channel: mcp-registry
+  name: io.github.slookisen/lokal-mcp
+  version: 0.4.0
+  published: '2026-05-15'
+  url: https://registry.modelcontextprotocol.io/v0/servers?search=lokal
+  note: Three versions on the official registry (0.3.1 2026-04-14, 0.3.3 2026-04-19, 0.4.0 2026-05-15). The repo's server.json (0.4.1) also declares two streamable-http remotes — rettfrabonden.com/mcp and server.smithery.ai/@slookisen/rettfrabonden.
+- channel: smithery
+  name: slookisen/lokal-norsk-matfinner
+  url: https://smithery.ai/servers/slookisen/lokal-norsk-matfinner
+  hosted_at: https://lokal-norsk-matfinner--slookisen.run.tools
+  note: Smithery registry lists 4 tools (lokal_search, lokal_discover, lokal_info, lokal_stats) for this listing.
+- channel: smithery
+  name: slookisen/rettfrabonden
+  url: https://smithery.ai/servers/@slookisen/rettfrabonden
+  hosted_at: https://rettfrabonden--slookisen.run.tools
+  note: Second Smithery listing named in the agent card's x-distribution block; registry.smithery.ai answers 200 for it.
+- channel: mcpb
+  file: mcp-server/lokal-mcp.mcpb
+  version: 0.4.0
+  url: https://github.com/slookisen/lokal/blob/main/mcp-server/manifest.json
+  note: Desktop-extension bundle (manifest_version 0.3) in the repository; version read from manifest.json, no registry metadata to query.
+- channel: chatgpt-custom-gpt
+  url: https://chatgpt.com/g/g-69dbf8593c1c81919050f8da98cd327d-finn-lokal-mat-i-norge
+  note: Linked from the homepage; a Custom GPT over /openapi.yaml, not an MCP surface.
+divergences:
+  note: >-
+    The provider's discovery documents disagree with the live server about WHICH tools exist. Recorded
+    so a reader knows which document to trust: the live tools/list capture in rettfrabonden-com-mcp-tools.json.
+  items:
+  - document: /.well-known/mcp/server-card.json
+    claims: tools search_producers, discover_by_category, get_producer, register_producer, start_negotiation
+    live: none of these five names exist; the server exposes lokal_* tools and no registration or negotiation tool
+  - document: /.well-known/agent-skills/index.json
+    claims: invocation.mcp.tool search_producers and discover_by_category
+    live: phantom names (see above)
+  - document: /llms.txt
+    claims: nine tools (lokal_search .. lokal_bm_next_markets)
+    live: omits the six cart/order tools that tools/list returns
+  - document: README (github.com/slookisen/lokal)
+    claims: four tools and two resources
+    live: fifteen tools, two resources
+  - document: server card
+    claims: newest negotiable protocol 2025-11-25
+    live: initialize with 2025-06-18 was accepted and echoed; 2025-11-25 was not tested

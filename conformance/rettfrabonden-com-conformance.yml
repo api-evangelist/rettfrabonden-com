@@ -1,0 +1,128 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  Live probes on 2026-09-19 of rettfrabonden.com (well-known documents, response headers, the MCP
+  handshake, the A2A endpoint) plus the two first-party OpenAPI documents and the provider's own
+  discovery files. Each entry names the artifact or URL that is its evidence; "conforms: true" is
+  only asserted where the document or behaviour was observed, and declared-only claims say so.
+standards:
+- id: a2a-1.0.0
+  name: Agent2Agent protocol — Agent Card
+  conforms: true
+  grade: conformant
+  evidence: a2a/rettfrabonden-com-a2a.yml — capabilities is an object, protocolVersion "1.0.0" present, skills is an array of 4; served at /.well-known/agent-card.json (200) and the legacy /.well-known/agent.json; JSON-RPC endpoint live (tasks/list 200, unknown method -> -32601)
+- id: mcp
+  name: Model Context Protocol — Streamable HTTP
+  conforms: true
+  protocol_version: '2025-06-18'
+  evidence: mcp/rettfrabonden-com-mcp.yml — initialize 200 negotiating 2025-06-18, Mcp-Session-Id issued, tools/list 15 tools with inputSchema + annotations, resources/list 2; prompts/list -> -32601 (prompts capability not advertised, consistent)
+  note: The server card states the 2026-07-28 era (per-request _meta, server/discover) is NOT supported.
+- id: mcp-server-card
+  name: MCP Server Card (SEP-1649 shape)
+  conforms: true
+  evidence: well-known/rettfrabonden-com-mcp-server-card.json served at /.well-known/mcp/server-card.json and /.well-known/mcp.json (schemaVersion 2025-11)
+  note: Tool names in the card do not match the live server (recorded in mcp/).
+- id: openapi-3.1
+  name: OpenAPI 3.1.0
+  conforms: true
+  evidence: openapi/rettfrabonden-com-openapi.yml and openapi/rettfrabonden-com-agent-surface-openapi.json both declare openapi 3.1.0, parse, and carry unique operationIds
+- id: json-rpc-2.0
+  name: JSON-RPC 2.0
+  conforms: true
+  evidence: /a2a returns {"jsonrpc":"2.0","error":{"code":-32601,...},"id":1} for an unknown method with HTTP 200; /mcp returns -32001 for a missing session and -32601 for prompts/list
+- id: rfc9727-api-catalog
+  name: RFC 9727 api-catalog well-known linkset
+  conforms: true
+  evidence: well-known/rettfrabonden-com-api-catalog.json — application/linkset+json at /.well-known/api-catalog with service-desc, service-doc and service-meta relations on three anchors
+- id: rfc9728-oauth-protected-resource
+  name: RFC 9728 OAuth 2.0 Protected Resource Metadata
+  conforms: partial
+  evidence: well-known/rettfrabonden-com-oauth-protected-resource.json — required `resource` present, `authorization_servers` is an EMPTY list, bearer_methods_supported [header], scopes_supported [read, write]
+  note: The document is well-formed but points at no authorization server; the resource is API-key protected. It advertises the shape without the OAuth it exists to describe.
+- id: rfc8414-oauth-authorization-server
+  name: RFC 8414 Authorization Server Metadata
+  conforms: false
+  evidence: https://rettfrabonden.com/.well-known/oauth-authorization-server -> 404
+- id: openid-connect-discovery
+  name: OpenID Connect Discovery 1.0
+  conforms: false
+  evidence: https://rettfrabonden.com/.well-known/openid-configuration -> 404
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence: no oauth2 securityScheme in either OpenAPI; no authorization server; authentication is API key or none (authentication/)
+- id: rfc9116-security-txt
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: https://rettfrabonden.com/.well-known/security.txt -> 404; /security.txt -> 404
+- id: ietf-ratelimit-headers
+  name: IETF RateLimit header fields (draft-ietf-httpapi-ratelimit-headers)
+  conforms: true
+  evidence: observed on GET /api/marketplace/search — RateLimit-Policy "300;w=900", RateLimit-Limit 300, RateLimit-Remaining 286, RateLimit-Reset 696; on POST /a2a — RateLimit-Policy "200;w=900" (rate-limits/rettfrabonden-com-rate-limits.yml)
+- id: rfc9457-problem-details
+  name: RFC 9457 Problem Details
+  conforms: false
+  evidence: errors are {"success":false,"error":"…","details":[…]} as application/json; unknown routes return Express text/html "Cannot GET …" (errors/rettfrabonden-com-problem-types.yml)
+- id: rfc8594-sunset
+  name: RFC 8594 Sunset header
+  conforms: false
+  evidence: no Sunset/Deprecation headers observed on any response; no deprecation policy published (lifecycle/)
+- id: agentskills-io-index-0.2.0
+  name: agentskills.io Agent Skills index schema v0.2.0
+  conforms: true
+  evidence: well-known/rettfrabonden-com-agent-skills-index.json — $schema https://agentskills.io/schemas/v0.2.0/index.schema.json, 4 skills with invocation blocks, served at /.well-known/agent-skills/index.json and /.well-known/skills/index.json
+  note: invocation.mcp.tool names two tools that do not exist on the live server.
+- id: openai-ai-plugin-manifest
+  name: OpenAI plugin manifest (schema_version v1)
+  conforms: true
+  evidence: well-known/rettfrabonden-com-ai-plugin.json — auth type none, api.type openapi -> /openapi.json
+- id: agents-txt
+  name: agents.txt AI agent discovery file (github.com/dennj/agents.txt)
+  conforms: true
+  evidence: well-known/rettfrabonden-com-agents.txt at /.well-known/agents.txt — Allow-actions / Disallow-actions, endpoint pointers, rate limits, contact
+- id: content-signals
+  name: Content Signals in robots.txt (Content-Signal directive)
+  conforms: true
+  evidence: 'well-known/rettfrabonden-com-robots.txt — "Content-Signal: search=yes, ai-input=yes, ai-train=no" on the * group and on each named AI crawler group'
+- id: robots-txt
+  name: Robots Exclusion Protocol (RFC 9309)
+  conforms: true
+  evidence: /robots.txt 200 with per-agent groups and a Sitemap directive; /sitemap.xml 200 (2.2 MB)
+- id: acp-product-feed
+  name: OpenAI Agentic Commerce Protocol — product feed (non-Ads)
+  conforms: declared
+  domain_standard: true
+  evidence: >-
+    openapi/rettfrabonden-com-openapi.yml#getAcpProductFeed — the operation description declares an
+    "ACP-conformant (OpenAI Agentic Commerce Protocol, non-Ads) CSV product feed" and documents the ACP
+    column set (item_id, title, description, brand, url, image_url, price, availability,
+    is_eligible_search, is_eligible_checkout, target_countries, product_category); live GET
+    /api/marketplace/catalog/acp-feed.csv returned 200 text/csv.
+  note: >-
+    This is the domain-standard signature for a food marketplace in the agentic-commerce era: a feed a
+    ChatGPT shopping surface can ingest without a bespoke connector. It is discovery-only —
+    is_eligible_checkout is always "false" — and the provider serves NO /.well-known/acp.json or
+    ucp.json, so the Kin Score agentic_commerce dimension (which reads those well-knowns) correctly
+    stays false. Graded "declared" because ACP column conformance was read from the provider's spec and
+    a live 200, not validated against the ACP feed schema by this pass.
+- id: schema-org
+  name: Schema.org structured data (JSON-LD)
+  conforms: true
+  evidence: >-
+    Observed 2026-09-19: https://rettfrabonden.com/ carries one application/ld+json block (@type WebSite
+    with potentialAction); https://rettfrabonden.com/produsent/ullandhaug-gardsbutikk carries two (@type
+    LocalBusiness with @id, name, description, url, address, telephone; and @type FAQPage with mainEntity).
+    /teknologi lists Schema.org among "the protocols we use".
+  note: Producer profiles are published as LocalBusiness entities — the human-web twin of the agent surfaces.
+- id: kartverket-stedsnavn
+  name: Kartverket Stedsnavn / adresser geocoding (Norwegian national mapping authority)
+  conforms: declared
+  evidence: openapi/rettfrabonden-com-openapi.yml#geocodePlace ("Covers all of Norway via Kartverket Stedsnavn API fallback"; geoPrecision "address" = "geocoded from a real street address (Kartverket adresser/v1/sok)"); live geocode source enum cache|hardcoded|database|kartverket
+  note: An upstream dependency on a national open-data API, declared in the contract — not a conformance the provider itself certifies.
+compliance_program: none
+compliance_note: >-
+  No certifications (SOC 2, ISO 27001, PCI, HIPAA) and no trust centre are published; /security, /trust
+  and /compliance paths 404 and probe-security-programs.py found nothing. The privacy page states GDPR
+  rights, EU/EEA hosting and named security measures (TLS, CSP, parameterised queries, hashed IPs) —
+  recorded in regulatory/ — but that is a policy, not a compliance programme, so no Compliance pointer
+  is emitted.

@@ -1,0 +1,16 @@
+generated: '2026-09-19'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: rettfrabonden.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  9 23:55:15 2026 GMT
+  hsts: null
+domains:
+- domain: rettfrabonden.com
+  dnssec: false
+  caa: []
+  spf: false
+  dmarc: true
+  dmarc_policy: none

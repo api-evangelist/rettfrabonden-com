@@ -1,0 +1,81 @@
+generated: '2026-09-19'
+method: derived
+format: custom-envelope
+source: >-
+  Derived from the 4xx responses declared in openapi/rettfrabonden-com-openapi.yml (geocodePlace 400/404)
+  and openapi/rettfrabonden-com-agent-surface-openapi.json (getProducer 404), enriched with error bodies
+  OBSERVED live on 2026-09-19 (geocode 400 and 404, discover 400, register 400, an unknown producer id,
+  an unknown route, MCP without a session, an unknown JSON-RPC method on /a2a and /mcp). No error
+  reference page exists; /docs is 404 and /teknologi does not document errors.
+envelope:
+  media_type: application/json
+  shape: '{ "success": false, "error": string, "details"?: [ { "code", "expected"?, "path": [..], "message", "values"? } ], "place"?: string }'
+  note: >-
+    Validation failures carry a zod issue list under details (code invalid_type / invalid_value, a JSON
+    path array, an English message); the top-level error string is Norwegian ("Ugyldig søk",
+    "Ugyldig registrering"). Not RFC 9457: no type/title/instance and the media type is plain
+    application/json. Routes that do not exist fall through to the Express default handler and return
+    text/html, so a client must branch on Content-Type before parsing an error.
+problems:
+- status: 400
+  title: Missing or invalid parameter
+  meaning: A required query parameter or body field is absent or of the wrong type.
+  source_operation: openapi/rettfrabonden-com-openapi.yml#geocodePlace
+  observed: 'GET /api/marketplace/geocode (no place) -> {"success":false,"error":"Missing ''place'' query parameter"}'
+- status: 400
+  title: Ugyldig søk (invalid discover body)
+  meaning: The discover request body failed schema validation.
+  source_operation: openapi/rettfrabonden-com-openapi.yml#discoverProducers
+  observed: 'POST /api/marketplace/discover {"categories":"x"} -> {"success":false,"error":"Ugyldig søk","details":[{"expected":"array","code":"invalid_type","path":["categories"],"message":"Invalid input: expected array, received string"}]}'
+  note: Not declared in either spec; discoverProducers documents only a 200.
+- status: 400
+  title: Ugyldig registrering (invalid registration)
+  meaning: The registration body failed schema validation; the live schema is stricter than the published one.
+  source_operation: openapi/rettfrabonden-com-agent-surface-openapi.json#registerProducer
+  observed: >-
+    POST /api/marketplace/register {} -> details list requiring name, description, provider, contactEmail,
+    url, skills (array) and role in [producer, consumer, logistics, quality, price-intel].
+  spec_drift: >-
+    /openapi.json declares only name as required and role enum [producer, consumer, logistics]; the live
+    validator requires seven fields and accepts five roles. Returned 400 with no credential, so validation
+    precedes the API-key check on an empty body.
+- status: 404
+  title: Place not found
+  meaning: The geocoder found no coordinates for the place name.
+  source_operation: openapi/rettfrabonden-com-openapi.yml#geocodePlace
+  observed: 'GET /api/marketplace/geocode?place=Xyzzyqqq -> {"success":false,"error":"No coordinates found for \"Xyzzyqqq\"","place":"Xyzzyqqq"}'
+- status: 404
+  title: Producer not found
+  meaning: Declared for an unknown producer id.
+  source_operation: openapi/rettfrabonden-com-agent-surface-openapi.json#getProducer
+  observed: 'GET /api/marketplace/agents/does-not-exist -> text/html "Cannot GET /api/marketplace/agents/does-not-exist" (Express default, not the JSON envelope)'
+  note: The spec promises a JSON 404; the live path returns the HTML fall-through, which suggests the documented /agents/{id} route differs from the served /agents/{agentId}/info route.
+- status: 404
+  title: Route not found
+  meaning: Any undefined path (e.g. /docs, /api/keys on GET, /api/marketplace/conversations).
+  media_type: text/html
+  observed: '<pre>Cannot GET /docs</pre>'
+- status: 404
+  title: MCP session not found
+  meaning: A JSON-RPC request reached /mcp without a valid Mcp-Session-Id.
+  media_type: application/json
+  observed: 'POST /mcp tools/list (no session) -> HTTP 404 {"jsonrpc":"2.0","error":{"code":-32001,"message":"Session not found"},"id":null}'
+  remediation: Send initialize first, capture the Mcp-Session-Id response header, and include it on every subsequent request.
+- status: 429
+  title: Rate limit exceeded
+  meaning: Per-IP window exhausted (300 general / 200 a2a / 150 search+discover per 15 minutes).
+  observed: not triggered by this pass
+  note: README states the server throttles rather than blocks and to back off for 15 minutes; RateLimit-* headers on every response carry the remaining budget (rate-limits/). No Retry-After documented.
+jsonrpc_errors:
+- code: -32601
+  message: Method not found
+  surfaces: [/a2a (HTTP 200), /mcp prompts/list (HTTP 200)]
+  observed: 'POST /a2a {"method":"nonexistent/method"} -> {"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found: nonexistent/method"},"id":1}'
+- code: -32001
+  message: Session not found
+  surfaces: [/mcp (HTTP 404)]
+mcp_tool_errors:
+- tool: lokal_cart_submit
+  meaning: Submit is rejected with a per-item message when any cart item is no longer in_stock (from the tool description; not triggered by this pass).
+- tool: lokal_cart_add_item
+  meaning: Product must be in_stock and from a verified non-umbrella producer; otherwise rejected (from the tool description).

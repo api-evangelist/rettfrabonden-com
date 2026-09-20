@@ -1,0 +1,196 @@
+generated: '2026-09-19'
+method: probed            # ONLY ever "probed" — never generated/derived
+source: https://rettfrabonden.com/.well-known/agent-card.json
+card:
+  file: rettfrabonden-com-agent-card.json
+  name: Rett fra Bonden
+  url: https://rettfrabonden.com/a2a
+  version: 1.0.0
+  skills: 4
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: rettfrabonden.com
+  note: >-
+    The same 15,941-byte body is served byte-identical at the legacy /.well-known/agent.json on
+    rettfrabonden.com and at /.well-known/agent-card.json on lokal.fly.dev — the Fly.io origin of the
+    same application, which is the URL the a2aregistry.org entry (00157ca1-450f-4341-91a5-dbcab7a667ef)
+    records as its wellKnownURI. www.rettfrabonden.com 301s every /.well-known/* path to the apex.
+    Ownership is not in question: the card's provider.organization is "Rett fra Bonden", provider.url
+    and homepage are https://rettfrabonden.com, its endpoints block names the same /api/marketplace,
+    /mcp and /openapi.json this repo harvested, and the site's own robots.txt, llms.txt, api-catalog
+    linkset and /api index all name this exact URL as the agent card.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://rettfrabonden.com/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json; charset=utf-8
+  body_bytes: 15941
+  body_parses_as: JSON object with AgentCard shape (name, url, version, protocolVersion, capabilities, skills all present)
+  corroborating_probes:
+  - url: https://rettfrabonden.com/.well-known/agent.json
+    http_status: 200
+    note: byte-identical to the canonical path
+  - url: https://lokal.fly.dev/.well-known/agent-card.json
+    http_status: 200
+    note: byte-identical; Fly.io origin host named by the a2aregistry.org entry
+  - url: https://www.rettfrabonden.com/.well-known/agent-card.json
+    http_status: 301
+    note: redirects to the apex
+  - url: https://rettfrabonden.com/a2a
+    http_status: 200
+    method: POST tasks/list
+    note: >-
+      The declared JSON-RPC interface is live and anonymous: tasks/list returned a real task list
+      (message/send tasks with completed states and timestamps). An unknown method returns a
+      JSON-RPC -32601 "Method not found" error with HTTP 200, as JSON-RPC 2.0 prescribes.
+  - url: https://rettfrabonden.com/a2a
+    http_status: 200
+    method: GET
+    note: >-
+      GET on the endpoint returns a SECOND, older agent card (see deviations) — 4,030 bytes, "1657+"
+      producers, three skills — rather than the well-known card. Recorded because a client that
+      dereferences the card url instead of the well-known path sees a different skill set.
+  - url: https://rettfrabonden.com/docs
+    http_status: 404
+    note: the card's documentationUrl and provider.contactUrl both point here, and it does not exist
+agent_card:
+  name: Rett fra Bonden
+  description: A2A marketplace for local food in Norway — 1904+ verified farms, shops, cooperatives, farm shops, REKO rings and markets.
+  version: 1.0.0
+  protocol_version: 1.0.0
+  preferred_transport: JSONRPC
+  documentation_url: https://rettfrabonden.com/docs
+  provenance_page_url: https://rettfrabonden.com/proveniens
+  icon_url: https://rettfrabonden.com/logo.svg
+  provider:
+    organization: Rett fra Bonden
+    url: https://rettfrabonden.com
+    contact_url: https://rettfrabonden.com/docs
+  additional_interfaces:
+  - url: https://rettfrabonden.com/api/marketplace
+    transport: HTTP+JSON
+  interfaces:
+  - type: json-rpc
+    url: https://rettfrabonden.com/a2a
+    methods: [message/send, tasks/get, tasks/list, agent/authenticatedExtendedCard]
+  - type: rest
+    url: https://rettfrabonden.com/api/marketplace
+  capabilities:
+    streaming: false
+    push_notifications: false
+    state_transition_history: true
+  default_input_modes: [text/plain, application/json]
+  default_output_modes: [application/json]
+  security_schemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key received upon registration. Required for write operations; read/search operations are open.
+    consumerApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Free, voluntary consumer-identity key obtained via POST /api/keys; raises the rate-limit ceiling ~3x on the general REST and /a2a surface. Not required for anything.
+  security: []
+  signatures:
+    count: 1
+    alg: EdDSA
+    kid: lokal-a2a-2026
+    note: >-
+      The card carries a JWS signature block (protected header {"alg":"EdDSA","kid":"lokal-a2a-2026"}).
+      The card names no jwks_uri and the site serves no /.well-known/jwks.json we found, so the
+      signature is present but not independently verifiable from public material alone.
+  skill_count: 4
+  skills:
+  - id: discover-local-food-agents
+    name: Discover Local Food Agents / Finn lokale matagenter
+    input_modes: [text/plain, application/json]
+    output_modes: [application/json]
+    examples: ['Find organic vegetable farms near Oslo', 'finn ferske grønnsaker i Bergen', 'fresh fish suppliers Tromsø']
+  - id: register-food-agent
+    name: Register Food Producer Agent / Registrer matagent
+    input_modes: [application/json]
+    output_modes: [application/json]
+    examples: ['Register my organic farm in Bergen', 'registrer en gård i Oslo']
+  - id: search-compare-food
+    name: Search & Compare Local Food / Søk og sammenlign
+    input_modes: [text/plain, application/json]
+    output_modes: [application/json]
+    examples: ['compare cheese prices in Oslo', 'finn billig honning nær Trondheim']
+  - id: agent-conversation
+    name: Start Agent Negotiation / Start forhandling
+    input_modes: [application/json]
+    output_modes: [application/json]
+    examples: ['negotiate delivery of 5kg tomatoes', 'bestill 2kg ost med levering']
+  vendor_extensions:
+    x-distribution: Smithery listing (@slookisen/rettfrabonden), npm stdio package lokal-mcp, a2aregistry.org entry
+    x-lokal: registry stats block (totalAgents 1904, activeProducers 1644, city list)
+    producers: empty array
+    endpoints: jsonrpc, discover, search, register, agents, mcp, llms, openapi URLs — all on rettfrabonden.com
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: 1.0.0
+  preferred_transport: JSONRPC
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    preferred_transport: true
+    default_input_modes: true
+    default_output_modes: true
+  grade_basis: >-
+    Graded against the A2A 1.0.0 hard checks on the verbatim card. capabilities is an OBJECT with
+    streaming, pushNotifications and stateTransitionHistory as boolean fields (pass). protocolVersion
+    is present at the top level as "1.0.0" (pass). skills is an ARRAY of four fully-populated skills,
+    each carrying id, name, description, tags, inputModes, outputModes and examples (pass). All three
+    optional discriminators — preferredTransport, defaultInputModes, defaultOutputModes — are declared.
+  deviations:
+  - field: documentationUrl / provider.contactUrl
+    observed: https://rettfrabonden.com/docs
+    note: >-
+      Returns 404. The provider's actual developer page is https://rettfrabonden.com/teknologi, which is
+      what the RFC 9728 protected-resource document and the MCP server card point at. An agent following
+      the card's own documentation link lands on an Express "Cannot GET /docs" page.
+  - field: interfaces
+    observed: non-standard top-level key carrying the JSON-RPC method list and the REST base
+    note: >-
+      A2A 0.3 describes secondary endpoints in additionalInterfaces (which the card ALSO carries) and
+      A2A 1.0.0 in supportedInterfaces. The card mixes the 0.3 shape (top-level url + preferredTransport +
+      additionalInterfaces) with a vendor "interfaces" list; the useful method enumeration lives only in
+      the non-standard key.
+  - field: authentication
+    observed: '{"schemes":["apiKey"],"credentials":null}'
+    note: Pre-0.3 authentication block retained alongside the current securitySchemes map. Harmless duplication.
+  - field: security
+    observed: empty array
+    note: >-
+      No security requirement is declared at card level even though the register-food-agent skill is
+      documented (in the scheme description) as requiring X-API-Key. A reader must infer the requirement
+      from prose.
+  - field: securitySchemes
+    observed: two schemes (apiKey, consumerApiKey) both bound to the same header name X-API-Key
+    note: >-
+      The card itself explains the distinction at length (producer key vs. voluntary consumer key), but
+      two schemes on one header are indistinguishable to a client at the transport level.
+  - field: skills
+    observed: four skills; the cart / pickup-order flow that the MCP server actually exposes (lokal_cart_create … lokal_order_status) is absent
+    note: >-
+      The OLDER card returned by GET /a2a lists a build-shopping-cart skill and only three skills in
+      total, while the well-known card lists four without it. The two cards the provider serves do not
+      agree, and neither enumerates the full MCP tool surface.
+  - field: signatures
+    observed: one EdDSA JWS block, kid lokal-a2a-2026, no key-discovery pointer
+    note: Signed cards are rare and this is a positive; recorded only because the key is not discoverable from the card.
+surface_relationship:
+  note: >-
+    Rett fra Bonden publishes three overlapping agent surfaces over one producer registry. A2A: four
+    skills at https://rettfrabonden.com/a2a, JSON-RPC 2.0, anonymous for reads. MCP: fifteen tools at
+    https://rettfrabonden.com/mcp (see mcp/rettfrabonden-com-mcp.yml) — the widest surface, and the only
+    one carrying the cart and pickup-order flow. REST: six operations in /openapi.yaml and eight paths in
+    /openapi.json (see mcp/rettfrabonden-com-tool-crosswalk.yml). The published OpenAPI exposes the card
+    itself as operation getAgentCard and the endpoint as a2aJsonRpc, so A2A is a first-class part of the
+    contract rather than a side surface.
