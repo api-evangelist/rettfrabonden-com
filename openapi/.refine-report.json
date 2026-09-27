@@ -1,0 +1,47 @@
+{
+  "provider": "rettfrabonden-com",
+  "sources": [
+    "rettfrabonden-com-agent-surface-openapi.json",
+    "rettfrabonden-com-openapi.yml"
+  ],
+  "outputs": [
+    "rettfrabonden-com-well-known-api-openapi.yml",
+    "rettfrabonden-com-a2a-api-openapi.yml",
+    "rettfrabonden-com-marketplace-api-openapi.yml",
+    "rettfrabonden-com-mcp-api-openapi.yml",
+    "rettfrabonden-com-stats-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/rettfrabonden-com-agent-surface-openapi.json",
+    "archived openapi/rettfrabonden-com-openapi.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "rettfrabonden-com-agent-surface-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths GET /api/marketplace/search -> Marketplace",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths GET /api/marketplace/agents -> Marketplace",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths GET /api/marketplace/agents/{id} -> Marketplace",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths POST /api/marketplace/discover -> Marketplace",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths POST /api/marketplace/register -> Marketplace",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths POST /a2a -> A2a",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths POST /mcp -> Mcp",
+    "rettfrabonden-com-agent-surface-openapi.json: tagged paths GET /.well-known/agent-card.json -> .well Known",
+    "rettfrabonden-com-agent-surface-openapi.json: declared missing tag: .well Known",
+    "rettfrabonden-com-agent-surface-openapi.json: declared missing tag: A2a",
+    "rettfrabonden-com-agent-surface-openapi.json: declared missing tag: Marketplace",
+    "rettfrabonden-com-agent-surface-openapi.json: declared missing tag: Mcp",
+    "rettfrabonden-com-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "rettfrabonden-com-openapi.yml: tagged paths GET /api/marketplace/search -> Marketplace",
+    "rettfrabonden-com-openapi.yml: tagged paths POST /api/marketplace/discover -> Marketplace",
+    "rettfrabonden-com-openapi.yml: tagged paths GET /api/marketplace/agents/{agentId}/info -> Marketplace",
+    "rettfrabonden-com-openapi.yml: tagged paths GET /api/marketplace/geocode -> Marketplace",
+    "rettfrabonden-com-openapi.yml: tagged paths GET /api/marketplace/catalog/acp-feed.csv -> Marketplace",
+    "rettfrabonden-com-openapi.yml: tagged paths GET /api/stats -> Stats",
+    "rettfrabonden-com-openapi.yml: declared missing tag: Marketplace",
+    "rettfrabonden-com-openapi.yml: declared missing tag: Stats",
+    "tag 'Marketplace' spans 2 source specs (rettfrabonden-com-agent-surface-openapi.json, rettfrabonden-com-openapi.yml): per-path servers applied",
+    "apis.yml register: written (+5 apis, 7 total)"
+  ],
+  "skipped": []
+}

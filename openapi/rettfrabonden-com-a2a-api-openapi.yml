@@ -1,0 +1,56 @@
+openapi: 3.2.0
+info:
+  title: Rett fra Bonden — Local Food A2a API
+  version: 1.0.0
+  description: REST API for discovering local food producers in Norway. Supports search, discovery, registration, and agent-to-agent communication.
+  contact:
+    url: https://github.com/slookisen/lokal
+  license:
+    name: MIT
+    url: https://github.com/slookisen/lokal/blob/main/LICENSE
+servers:
+- url: https://rettfrabonden.com
+  description: Production
+tags:
+- name: A2a
+paths:
+  /a2a:
+    post:
+      summary: A2A JSON-RPC 2.0 endpoint
+      operationId: a2aJsonRpc
+      description: 'Agent-to-agent communication. Supports methods: message/send, tasks/get, tasks/list, agent/info'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - jsonrpc
+              - method
+              - id
+              properties:
+                jsonrpc:
+                  type: string
+                  const: '2.0'
+                method:
+                  type: string
+                  enum:
+                  - message/send
+                  - tasks/get
+                  - tasks/list
+                  - agent/info
+                params:
+                  type: object
+                id:
+                  type: string
+      responses:
+        '200':
+          description: JSON-RPC response
+      tags:
+      - A2a
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-Admin-Key

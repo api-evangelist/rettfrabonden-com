@@ -11,6 +11,22 @@ description: >-
   requires an X-API-Key issued on registration. The code is MIT-licensed at github.com/slookisen/lokal
   and the platform is operated in Norway by Daniel Fredriksen.
 url: https://raw.githubusercontent.com/api-evangelist/rettfrabonden-com/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  license_evidence:
+    not_product:
+    - slookisen/lokal
+  open_source: unknown
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: low
+  source:
+  - openapi
+  - pricing
+  - repository-not-product
+  generated: '2026-09-25'
+  method: derived
 image: https://rettfrabonden.com/logo-512.png
 x-type: company
 x-source: harvest:a2a-registry
@@ -36,10 +52,10 @@ tags:
 - Directory
 - Search
 - Geolocation
-- Agent-to-Agent
+- A2A
 - MCP
 - Norway
-- Open-Source
+- Open Source
 - Company
 tags_raw:
 - Local Food
@@ -54,66 +70,23 @@ tags_raw:
 - Norway
 - Open Source
 - Company
+- Open-Source
 apis:
-- name: Rett fra Bonden Local Food API
-  description: >-
-    REST surface at https://rettfrabonden.com/api/marketplace — natural-language search (searchFood),
-    structured discovery (discoverProducers), producer detail (getProducerInfo), Norwegian place
-    geocoding (geocodePlace), an ACP-conformant CSV product feed (getAcpProductFeed) and platform
-    statistics (getPlatformStats). Reads are open with no credential; producer registration and other
-    writes require X-API-Key. Two first-party OpenAPI 3.1.0 documents are published: /openapi.yaml
-    (richer schemas, 6 operations) and /openapi.json (8 paths including register, /a2a and /mcp).
-  image: https://rettfrabonden.com/logo-512.png
-  humanURL: https://rettfrabonden.com/teknologi
-  baseURL: https://rettfrabonden.com/api/marketplace
-  tags:
-  - Local Food
-  - Search
-  - Geolocation
-  - Directory
-  properties:
-  - type: OpenAPI
-    url: openapi/rettfrabonden-com-openapi.yml
-  - type: OpenAPI
-    name: Agent-surface OpenAPI (/openapi.json — adds listProducers, getProducer, registerProducer, a2aJsonRpc, mcpEndpoint, getAgentCard)
-    url: openapi/rettfrabonden-com-agent-surface-openapi.json
-  - type: OpenAPI
-    name: Provider-hosted openapi.yaml
-    url: https://rettfrabonden.com/openapi.yaml
-  - type: OpenAPI
-    name: Provider-hosted openapi.json
-    url: https://rettfrabonden.com/openapi.json
-  - type: Documentation
-    url: https://rettfrabonden.com/teknologi
-  - type: APIReference
-    url: https://github.com/slookisen/lokal#readme
-  - type: Authentication
-    url: authentication/rettfrabonden-com-authentication.yml
-  - type: Conventions
-    url: conventions/rettfrabonden-com-conventions.yml
-  - type: ErrorCatalog
-    url: errors/rettfrabonden-com-problem-types.yml
-  - type: DataModel
-    url: data-model/rettfrabonden-com-data-model.yml
-  - type: RateLimits
-    url: rate-limits/rettfrabonden-com-rate-limits.yml
-  - type: Overlay
-    url: overlays/rettfrabonden-com-openapi-overlay.yaml
-  - type: ToolCrosswalk
-    url: mcp/rettfrabonden-com-tool-crosswalk.yml
-  - type: AgenticAccess
-    url: agentic-access/rettfrabonden-com-agentic-access.yml
 - name: Rett fra Bonden MCP Server
   description: >-
     Remote MCP server (Streamable HTTP, protocol 2025-06-18 negotiated) at https://rettfrabonden.com/mcp
-    with 15 tools — search, discover, producer info, umbrella organisations, Bondens marked events,
-    geocoding, shopping-list offers, and an anonymous cart -> pickup-order flow — plus two resources.
-    tools/list answers anonymously after initialize. Also shipped as the npm stdio package lokal-mcp
-    (0.4.0) and mirrored on Smithery.
+    with 15 tools — search, discover, producer info, umbrella organisations, Bondens marked events, geocoding,
+    shopping-list offers, and an anonymous cart -> pickup-order flow — plus two resources. tools/list
+    answers anonymously after initialize. Also shipped as the npm stdio package lokal-mcp (0.4.0) and
+    mirrored on Smithery.
   image: https://rettfrabonden.com/logo-512.png
   humanURL: https://rettfrabonden.com/teknologi#mcp-oppsett
   baseURL: https://rettfrabonden.com/mcp
   tags:
+  - MCP
+  - A2A
+  - Local Food
+  tags_raw:
   - MCP
   - Agent-to-Agent
   - Local Food
@@ -128,14 +101,16 @@ apis:
     url: authentication/rettfrabonden-com-authentication.yml
 - name: Rett fra Bonden A2A Agent
   description: >-
-    A2A JSON-RPC 2.0 endpoint at https://rettfrabonden.com/a2a (message/send, tasks/get, tasks/list,
-    agent/authenticatedExtendedCard) described by an EdDSA-signed agent card served at
-    /.well-known/agent-card.json (and the legacy /.well-known/agent.json). Four declared skills:
-    discover-local-food-agents, register-food-agent, search-compare-food, agent-conversation.
+    A2A JSON-RPC 2.0 endpoint at https://rettfrabonden.com/a2a (message/send, tasks/get, tasks/list, agent/authenticatedExtendedCard)
+    described by an EdDSA-signed agent card served at /.well-known/agent-card.json (and the legacy /.well-known/agent.json).
+    Four declared skills: discover-local-food-agents, register-food-agent, search-compare-food, agent-conversation.
   image: https://rettfrabonden.com/logo-512.png
   humanURL: https://rettfrabonden.com/teknologi
   baseURL: https://rettfrabonden.com/a2a
   tags:
+  - A2A
+  - Local Food
+  tags_raw:
   - Agent-to-Agent
   - Local Food
   properties:
@@ -145,6 +120,146 @@ apis:
     url: https://rettfrabonden.com/teknologi
   - type: Authentication
     url: authentication/rettfrabonden-com-authentication.yml
+- aid: rettfrabonden-com:rettfrabonden-com-a2a-api
+  name: Rett fra Bonden A2a API
+  description: The A2a API from Rett fra Bonden — 1 operation(s) for a2a.
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/api/marketplace
+  tags:
+  - A2a
+  properties:
+  - type: OpenAPI
+    url: openapi/rettfrabonden-com-a2a-api-openapi.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: APIReference
+    url: https://github.com/slookisen/lokal#readme
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+  - type: Conventions
+    url: conventions/rettfrabonden-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/rettfrabonden-com-problem-types.yml
+  - type: DataModel
+    url: data-model/rettfrabonden-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/rettfrabonden-com-rate-limits.yml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: AgenticAccess
+    url: agentic-access/rettfrabonden-com-agentic-access.yml
+- aid: rettfrabonden-com:rettfrabonden-com-marketplace-api
+  name: Rett fra Bonden Marketplace API
+  description: The Marketplace API from Rett fra Bonden — 8 operation(s) for marketplace.
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/api/marketplace
+  tags:
+  - Marketplace
+  properties:
+  - type: OpenAPI
+    url: openapi/rettfrabonden-com-marketplace-api-openapi.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: APIReference
+    url: https://github.com/slookisen/lokal#readme
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+  - type: Conventions
+    url: conventions/rettfrabonden-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/rettfrabonden-com-problem-types.yml
+  - type: DataModel
+    url: data-model/rettfrabonden-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/rettfrabonden-com-rate-limits.yml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: AgenticAccess
+    url: agentic-access/rettfrabonden-com-agentic-access.yml
+- aid: rettfrabonden-com:rettfrabonden-com-mcp-api
+  name: Rett fra Bonden MCP API
+  description: The Mcp API from Rett fra Bonden — 1 operation(s) for mcp.
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/api/marketplace
+  tags:
+  - Mcp
+  properties:
+  - type: OpenAPI
+    url: openapi/rettfrabonden-com-mcp-api-openapi.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: APIReference
+    url: https://github.com/slookisen/lokal#readme
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+  - type: Conventions
+    url: conventions/rettfrabonden-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/rettfrabonden-com-problem-types.yml
+  - type: DataModel
+    url: data-model/rettfrabonden-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/rettfrabonden-com-rate-limits.yml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: AgenticAccess
+    url: agentic-access/rettfrabonden-com-agentic-access.yml
+- aid: rettfrabonden-com:rettfrabonden-com-stats-api
+  name: Rett fra Bonden Stats API
+  description: The Stats API from Rett fra Bonden — 1 operation(s) for stats.
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/api/marketplace
+  tags:
+  - Stats
+  properties:
+  - type: OpenAPI
+    url: openapi/rettfrabonden-com-stats-api-openapi.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: APIReference
+    url: https://github.com/slookisen/lokal#readme
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+  - type: Conventions
+    url: conventions/rettfrabonden-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/rettfrabonden-com-problem-types.yml
+  - type: DataModel
+    url: data-model/rettfrabonden-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/rettfrabonden-com-rate-limits.yml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: AgenticAccess
+    url: agentic-access/rettfrabonden-com-agentic-access.yml
+- aid: rettfrabonden-com:rettfrabonden-com-well-known-api
+  name: Rett fra Bonden .well Known API
+  description: The .well Known API from Rett fra Bonden — 1 operation(s) for .well known.
+  humanURL: https://rettfrabonden.com/teknologi
+  baseURL: https://rettfrabonden.com/api/marketplace
+  tags:
+  - .well Known
+  properties:
+  - type: OpenAPI
+    url: openapi/rettfrabonden-com-well-known-api-openapi.yml
+  - type: Documentation
+    url: https://rettfrabonden.com/teknologi
+  - type: APIReference
+    url: https://github.com/slookisen/lokal#readme
+  - type: Authentication
+    url: authentication/rettfrabonden-com-authentication.yml
+  - type: Conventions
+    url: conventions/rettfrabonden-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/rettfrabonden-com-problem-types.yml
+  - type: DataModel
+    url: data-model/rettfrabonden-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/rettfrabonden-com-rate-limits.yml
+  - type: ToolCrosswalk
+    url: mcp/rettfrabonden-com-tool-crosswalk.yml
+  - type: AgenticAccess
+    url: agentic-access/rettfrabonden-com-agentic-access.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -233,3 +348,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 36
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://rettfrabonden.com/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "1.0.0"
+  control: 404

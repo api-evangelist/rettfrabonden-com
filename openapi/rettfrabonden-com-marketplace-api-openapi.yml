@@ -1,0 +1,309 @@
+openapi: 3.2.0
+info:
+  title: Rettfrabonden Com Marketplace API
+  version: 1.0.0
+  description: 'Operations tagged Marketplace across 2 of this provider''s published API definitions: rettfrabonden-com-agent-surface-openapi.json, rettfrabonden-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rettfrabonden.com
+  description: Production
+tags:
+- name: Marketplace
+paths:
+  /api/marketplace/search:
+    get:
+      summary: Search producers by natural language query
+      operationId: searchProducers
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Search query (Norwegian or English)
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+        description: Max results
+      responses:
+        '200':
+          description: Search results with ranked producers
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/agents:
+    get:
+      summary: List all active producers
+      operationId: listProducers
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 50
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Array of producer agents
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/agents/{id}:
+    get:
+      summary: Get a specific producer by ID
+      operationId: getProducer
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Producer details with knowledge
+        '404':
+          description: Producer not found
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/discover:
+    post:
+      summary: Discover producers with structured filters
+      operationId: discoverProducers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+                maxDistanceKm:
+                  type: number
+                limit:
+                  type: integer
+                  default: 20
+      responses:
+        '200':
+          description: Matched producers with relevance scores
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/register:
+    post:
+      summary: Register a new food producer
+      operationId: registerProducer
+      security:
+      - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                role:
+                  type: string
+                  enum:
+                  - producer
+                  - consumer
+                  - logistics
+                categories:
+                  type: array
+                  items:
+                    type: string
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+                    city:
+                      type: string
+      responses:
+        '200':
+          description: Registered agent with API key
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/agents/{agentId}/info:
+    get:
+      operationId: getProducerInfo
+      summary: Get full producer details
+      description: Returns complete information about a producer including address, products, opening hours, certifications, and trust score.
+      parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Producer details with knowledge data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      agent:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          description:
+                            type: string
+                      knowledge:
+                        type: object
+                        properties:
+                          address:
+                            type: string
+                          products:
+                            type: array
+                            items:
+                              type: string
+                          openingHours:
+                            type: string
+                          about:
+                            type: string
+                          certifications:
+                            type: array
+                            items:
+                              type: string
+                          paymentMethods:
+                            type: array
+                            items:
+                              type: string
+                          deliveryOptions:
+                            type: array
+                            items:
+                              type: string
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/geocode:
+    get:
+      operationId: geocodePlace
+      summary: Geocode a Norwegian place name
+      description: Resolve a Norwegian place name (city, town, region, fylke, or kommune) to lat/lng coordinates with a suggested search radius. Use when you need explicit coordinates for the discoverProducers endpoint (e.g., 'show me organic farms within 10 km of Florø'). Covers all of Norway via Kartverket Stedsnavn API fallback.
+      parameters:
+      - name: place
+        in: query
+        required: true
+        description: Norwegian place name (city, town, region, fylke, kommune)
+        schema:
+          type: string
+        example: Florø
+      responses:
+        '200':
+          description: Coordinates found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  place:
+                    type: string
+                  result:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      lat:
+                        type: number
+                      lng:
+                        type: number
+                      radiusKm:
+                        type: number
+                      source:
+                        type: string
+                        enum:
+                        - cache
+                        - hardcoded
+                        - database
+                        - kartverket
+        '404':
+          description: Place not found
+        '400':
+          description: Missing place parameter
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+  /api/marketplace/catalog/acp-feed.csv:
+    get:
+      operationId: getAcpProductFeed
+      summary: ACP product feed (CSV)
+      description: RFB-only, ACP-conformant (OpenAI Agentic Commerce Protocol, non-Ads) CSV product feed of verified, in-stock, non-umbrella producers' products, so they can be discovered in ChatGPT shopping surfaces. Discovery-only — no checkout/payment integration (is_eligible_checkout is always "false"). Reuses the same filter/source as the JSON feed at /api/marketplace/catalog/feed. Rows missing a required field (image_url or price) are skipped; the count skipped is reported in the X-Acp-Feed-Skipped-Count response header.
+      responses:
+        '200':
+          description: CSV product feed
+          content:
+            text/csv:
+              schema:
+                type: string
+              example: 'item_id,title,description,brand,url,image_url,price,availability,is_eligible_search,is_eligible_checkout,target_countries,product_category
+
+                prod-123,Økologiske Poteter,Ferske poteter fra gården,Åsen Gård,https://rettfrabonden.com/produsent/asen-gard,https://rettfrabonden.com/images/poteter.jpg,275.00 NOK,in_stock,true,false,NO,grønnsaker
+
+                '
+      tags:
+      - Marketplace
+    servers:
+    - url: https://rettfrabonden.com
+      description: Production
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-Admin-Key
+x-refined-from:
+- rettfrabonden-com-agent-surface-openapi.json
+- rettfrabonden-com-openapi.yml

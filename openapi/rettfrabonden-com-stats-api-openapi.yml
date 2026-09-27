@@ -1,0 +1,37 @@
+openapi: 3.2.0
+info:
+  title: Rett fra Bonden — Lokal Mat Stats API
+  description: Finn lokale matprodusenter i Norge. Søk blant 1 100+ gårdsbutikker, markeder og REKO-ringer etter kategori, sted og sesong.
+  version: 1.0.0
+servers:
+- url: https://rettfrabonden.com
+  description: Production
+tags:
+- name: Stats
+paths:
+  /api/stats:
+    get:
+      operationId: getPlatformStats
+      summary: Platform statistics
+      description: Returns current platform metrics — total producers, cities covered, and interaction count.
+      responses:
+        '200':
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      totalAgents:
+                        type: integer
+                      totalCities:
+                        type: integer
+                      totalInteractions:
+                        type: integer
+      tags:
+      - Stats
