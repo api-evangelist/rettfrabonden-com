@@ -1,8 +1,8 @@
 {
   "provider": "rettfrabonden-com",
   "sources": [
-    "rettfrabonden-com-agent-surface-openapi.json",
-    "rettfrabonden-com-openapi.yml"
+    "_original/rettfrabonden-com-agent-surface-openapi.json",
+    "_original/rettfrabonden-com-openapi.yml"
   ],
   "outputs": [
     "rettfrabonden-com-well-known-api-openapi.yml",
@@ -11,13 +11,11 @@
     "rettfrabonden-com-mcp-api-openapi.yml",
     "rettfrabonden-com-stats-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/rettfrabonden-com-agent-surface-openapi.json",
-    "archived openapi/rettfrabonden-com-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "rettfrabonden-com-agent-surface-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "rettfrabonden-com-agent-surface-openapi.json: tagged paths GET /api/marketplace/search -> Marketplace",
     "rettfrabonden-com-agent-surface-openapi.json: tagged paths GET /api/marketplace/agents -> Marketplace",
@@ -41,7 +39,13 @@
     "rettfrabonden-com-openapi.yml: declared missing tag: Marketplace",
     "rettfrabonden-com-openapi.yml: declared missing tag: Stats",
     "tag 'Marketplace' spans 2 source specs (rettfrabonden-com-agent-surface-openapi.json, rettfrabonden-com-openapi.yml): per-path servers applied",
-    "apis.yml register: written (+5 apis, 7 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "rettfrabonden-com-a2a-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "rettfrabonden-com-marketplace-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "rettfrabonden-com-mcp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "rettfrabonden-com-stats-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "rettfrabonden-com-well-known-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
