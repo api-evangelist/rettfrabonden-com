@@ -126,6 +126,8 @@ apis:
   humanURL: https://rettfrabonden.com/teknologi
   baseURL: https://rettfrabonden.com/api/marketplace
   tags:
+  - A2A
+  tags_raw:
   - A2a
   properties:
   - type: OpenAPI
@@ -182,6 +184,8 @@ apis:
   humanURL: https://rettfrabonden.com/teknologi
   baseURL: https://rettfrabonden.com/api/marketplace
   tags:
+  - MCP
+  tags_raw:
   - Mcp
   properties:
   - type: OpenAPI
