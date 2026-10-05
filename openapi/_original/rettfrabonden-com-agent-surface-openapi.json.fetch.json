@@ -1,0 +1,12 @@
+{
+ "url": "https://rettfrabonden.com/openapi.json",
+ "requested_url": "https://rettfrabonden.com/openapi.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 3855,
+ "sha256": "59e175f64238428d989f5b0178e19d6012a7aeb1d6c00186378a92360dae36c7",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
