@@ -270,6 +270,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Pricing
+  url: https://rettfrabonden.com/llms.txt
 - type: Website
   url: https://rettfrabonden.com/
 - type: Documentation
