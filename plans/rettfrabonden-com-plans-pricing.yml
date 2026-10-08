@@ -49,3 +49,24 @@ producer_side:
   note: The repository contains ROADMAP-MONETIZATION.md, so a paid tier may be planned; nothing is published or priced as of 2026-09-19.
 admin_tier:
   note: The /api index and agents.txt name an "admin" limit of 500 requests per hour; this is the operator's own credential (X-Admin-Key), not a purchasable plan, and is not counted above.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - metered
+  units: []
+  plans:
+  - name: Open access (no key)
+    access: other
+    model: metered
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: Consumer key (voluntary, free)
+    access: other
+    model: metered
+    model_how: derived
+    units: []
+    periods:
+    - other
